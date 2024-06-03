@@ -4,7 +4,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTQC                 } from '../modules/nf-core/fastqc/main'
+include { WINDOWMASKER_USTAT     } from '../modules/nf-core/windowmasker/ustat/main'
+include { WINDOWMASKER_MKCOUNTS  } from '../modules/nf-core/windowmasker/mkcounts/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap       } from 'plugin/nf-validation'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -28,13 +29,20 @@ workflow PAIRGENOMEALIGNMASK {
     ch_multiqc_files = Channel.empty()
 
     //
-    // MODULE: Run FastQC
+    // MODULE: WINDOWMASKER_MKCOUNTS
     //
-    FASTQC (
+    WINDOWMASKER_MKCOUNTS (
         ch_samplesheet
     )
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+
+    //
+    // MODULE: WINDOWMASKER_USTAT
+    //
+    WINDOWMASKER_USTAT (
+        WINDOWMASKER_MKCOUNTS.out.counts.join(ch_samplesheet)
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(WINDOWMASKER_MKCOUNTS.out.counts.collect{it[1]})
+    ch_versions = ch_versions.mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
 
     //
     // Collate and save software versions
