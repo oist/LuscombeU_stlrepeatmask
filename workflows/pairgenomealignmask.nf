@@ -6,6 +6,7 @@
 
 include { WINDOWMASKER_USTAT     } from '../modules/nf-core/windowmasker/ustat/main'
 include { WINDOWMASKER_MKCOUNTS  } from '../modules/nf-core/windowmasker/mkcounts/main'
+include { TANTAN                 } from '../modules/local/tantan.nf'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap       } from 'plugin/nf-validation'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -27,6 +28,13 @@ workflow PAIRGENOMEALIGNMASK {
 
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
+
+    //
+    // MODULE: TANTAN
+    //
+    TANTAN (
+        ch_samplesheet
+    )
 
     //
     // MODULE: WINDOWMASKER_MKCOUNTS
