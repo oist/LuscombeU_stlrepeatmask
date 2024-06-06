@@ -4,14 +4,16 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { WINDOWMASKER_USTAT     } from '../modules/nf-core/windowmasker/ustat/main'
-include { WINDOWMASKER_MKCOUNTS  } from '../modules/nf-core/windowmasker/mkcounts/main'
-include { TANTAN                 } from '../modules/local/tantan.nf'
-include { MULTIQC                } from '../modules/nf-core/multiqc/main'
-include { paramsSummaryMap       } from 'plugin/nf-validation'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_pairgenomealignmask_pipeline'
+include { WINDOWMASKER_USTAT          } from '../modules/nf-core/windowmasker/ustat/main'
+include { WINDOWMASKER_MKCOUNTS       } from '../modules/nf-core/windowmasker/mkcounts/main'
+include { REPEATMODELER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/repeatmodeler/main'
+include { REPEATMODELER_BUILDDATABASE } from '../modules/nf-core/repeatmodeler/builddatabase/main'
+include { TANTAN                      } from '../modules/local/tantan.nf'
+include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
+include { paramsSummaryMap            } from 'plugin/nf-validation'
+include { paramsSummaryMultiqc        } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML      } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText      } from '../subworkflows/local/utils_nfcore_pairgenomealignmask_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,21 +32,35 @@ workflow PAIRGENOMEALIGNMASK {
     ch_multiqc_files = Channel.empty()
 
     //
-    // MODULE: TANTAN
+    // MODULE: tantan
     //
     TANTAN (
         ch_samplesheet
     )
 
     //
-    // MODULE: WINDOWMASKER_MKCOUNTS
+    // MODULE: repeatmodeler_builddatabase
+    //
+    REPEATMODELER_BUILDDATABASE (
+        ch_samplesheet
+    )
+
+    //
+    // MODULE: repeatmodeler_repeatmodeler
+    //
+    REPEATMODELER_REPEATMODELER (
+        REPEATMODELER_BUILDDATABASE.out.db
+    )
+
+    //
+    // MODULE: windowmasker_mkcounts
     //
     WINDOWMASKER_MKCOUNTS (
         ch_samplesheet
     )
 
     //
-    // MODULE: WINDOWMASKER_USTAT
+    // MODULE: windowmasker_ustat
     //
     WINDOWMASKER_USTAT (
         WINDOWMASKER_MKCOUNTS.out.counts.join(ch_samplesheet)
