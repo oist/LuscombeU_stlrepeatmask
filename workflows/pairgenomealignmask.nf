@@ -7,8 +7,12 @@
 include { WINDOWMASKER_USTAT          } from '../modules/nf-core/windowmasker/ustat/main'
 include { WINDOWMASKER_MKCOUNTS       } from '../modules/nf-core/windowmasker/mkcounts/main'
 include { REPEATMODELER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/repeatmodeler/main'
+include { REPEATMODELER_MASKER        } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
 include { REPEATMODELER_BUILDDATABASE } from '../modules/nf-core/repeatmodeler/builddatabase/main'
 include { TANTAN                      } from '../modules/local/tantan.nf'
+include { GFASTATS as GFSTTANTAN      } from '../modules/nf-core/gfastats/main'
+include { GFASTATS as GFSTREPEATMOD   } from '../modules/nf-core/gfastats/main'
+include { GFASTATS as GFSTWINDOWMASK  } from '../modules/nf-core/gfastats/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap            } from 'plugin/nf-validation'
 include { paramsSummaryMultiqc        } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -37,8 +41,14 @@ workflow PAIRGENOMEALIGNMASK {
     TANTAN (
         ch_samplesheet
     )
-
+    
     //
+    // MODULE: gfastats_tantan
+    //
+    GFSTTANTAN (
+        TANTAN.out.masked_fa
+    )
+    
     // MODULE: repeatmodeler_builddatabase
     //
     REPEATMODELER_BUILDDATABASE (
@@ -50,6 +60,21 @@ workflow PAIRGENOMEALIGNMASK {
     //
     REPEATMODELER_REPEATMODELER (
         REPEATMODELER_BUILDDATABASE.out.db
+    )
+
+    //
+    // MODULE: repeatmodeler_repeatmasker
+    //
+    REPEATMODELER_MASKER (
+        REPEATMODELER_REPEATMODELER.out.fasta,
+        ch_samplesheet
+    )
+
+    //
+    // MODULE: gfastats_repeatmodeler
+    //
+    GFSTREPEATMOD (
+        REPEATMODELER_REPEATMODELER.out.fasta
     )
 
     //
@@ -65,6 +90,14 @@ workflow PAIRGENOMEALIGNMASK {
     WINDOWMASKER_USTAT (
         WINDOWMASKER_MKCOUNTS.out.counts.join(ch_samplesheet)
     )
+
+    //
+    // MODULE: gfastats_windowmasker
+    //
+    GFSTWINDOWMASK (
+        WINDOWMASKER_USTAT.out.intervals
+    )
+
     ch_multiqc_files = ch_multiqc_files.mix(WINDOWMASKER_MKCOUNTS.out.counts.collect{it[1]})
     ch_versions = ch_versions.mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
 
