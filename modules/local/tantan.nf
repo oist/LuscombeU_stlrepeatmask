@@ -39,7 +39,7 @@ process TANTAN {
 
     output:
     // TODO nf-core: Named file extensions MUST be emitted for ALL output channels
-    tuple val(meta), path("*.masked.fa"), emit: masked_fasta
+    tuple val(meta), path("*.masked.fa"), emit: masked_fa
     // TODO nf-core: List additional required output channels/values here
     path "versions.yml"           , emit: versions
 

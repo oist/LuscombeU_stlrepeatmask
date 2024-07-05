@@ -20,7 +20,7 @@ process WINDOWMASKER_USTAT {
     script:
     def args    =   task.ext.args         ?: ""
     def prefix  =   task.ext.prefix       ?: "${meta.id}"
-    def outfmt  =   args.contains('-outfmt fasta')                ? 'fasta'               :
+    def outfmt  =   args.contains('-outfmt fasta')                ? 'fsta'                :
                     args.contains('-outfmt maskinfo_asn1_bin')    ? 'maskinfo_asn1_bin'   :
                     args.contains('-outfmt maskinfo_asn1_text')   ? 'maskinfo_asn1_text'  :
                     args.contains('-outfmt maskinfo_xml')         ? 'maskinfo_xml'        :
