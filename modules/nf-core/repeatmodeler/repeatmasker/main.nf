@@ -12,8 +12,11 @@ process REPEATMODELER_MASKER {
     tuple val(meta), path(ref)
 
     output:
-    tuple val(meta), path("*.fa") , emit: fastas
-    path "versions.yml"           , emit: versions
+    tuple val(meta), path("*.masked") , emit: fasta
+    tuple val(meta), path("*.cat")    , emit: cat
+    tuple val(meta), path("*.out")    , emit: out
+    tuple val(meta), path("*.tbl")    , emit: tbl
+    path "versions.yml"               , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -23,6 +26,7 @@ process REPEATMODELER_MASKER {
     def prefix  = task.ext.prefix ?: "${meta.id}"
     """
     RepeatMasker \\
+        -xsmall \\
         -lib $fasta \\
         $ref \\
         $args \\
