@@ -74,7 +74,7 @@ workflow PAIRGENOMEALIGNMASK {
     // MODULE: gfastats_repeatmodeler
     //
     GFSTREPEATMOD (
-        REPEATMODELER_REPEATMODELER.out.fasta
+        REPEATMODELER_MASKER.out.fasta
     )
 
     //
