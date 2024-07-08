@@ -10,6 +10,7 @@ include { REPEATMODELER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/r
 include { REPEATMODELER_MASKER        } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
 include { REPEATMODELER_BUILDDATABASE } from '../modules/nf-core/repeatmodeler/builddatabase/main'
 include { TANTAN                      } from '../modules/local/tantan.nf'
+include { CUSTOMMODULE                } from '../modules/local/custommodule.nf'
 include { GFASTATS as GFSTTANTAN      } from '../modules/nf-core/gfastats/main'
 include { GFASTATS as GFSTREPEATMOD   } from '../modules/nf-core/gfastats/main'
 include { GFASTATS as GFSTWINDOWMASK  } from '../modules/nf-core/gfastats/main'
@@ -98,7 +99,17 @@ workflow PAIRGENOMEALIGNMASK {
         WINDOWMASKER_USTAT.out.intervals
     )
 
-    ch_multiqc_files = ch_multiqc_files.mix(WINDOWMASKER_MKCOUNTS.out.counts.collect{it[1]})
+    //
+    // MODULE: CUSTOMMODULE
+    //
+    CUSTOMMODULE (
+        GFSTTANTAN.out.assembly_summary.collect{it[1]},
+        GFSTWINDOWMASK.out.assembly_summary.collect{it[1]},
+        GFSTREPEATMOD.out.assembly_summary.collect{it[1]}
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(CUSTOMMODULE.out.tsv)
+
+
     ch_versions = ch_versions.mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
 
     //
