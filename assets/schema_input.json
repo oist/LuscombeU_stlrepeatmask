@@ -7,7 +7,7 @@
     "items": {
         "type": "object",
         "properties": {
-            "sample": {
+            "id": {
                 "type": "string",
                 "pattern": "^\\S+$",
                 "errorMessage": "Sample name must be provided and cannot contain spaces",
@@ -21,6 +21,6 @@
                 "errorMessage": "Fasta file must be provided, cannot contain spaces and must have extension '.fa.gz' or '.fasta.gz'"
             }
         },
-        "required": ["sample", "fasta"]
+        "required": ["id", "fasta"]
     }
 }

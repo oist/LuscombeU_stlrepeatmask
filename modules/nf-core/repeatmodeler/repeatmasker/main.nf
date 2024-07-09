@@ -31,6 +31,10 @@ process REPEATMODELER_MASKER {
         $ref \\
         $args \\
 
+   mv genome.fasta.masked ${prefix}.masked
+   mv genome.fasta.out    ${prefix}.out
+   mv genome.fasta.tbl    ${prefix}.tbl
+   mv genome.fasta.cat    ${prefix}.cat
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
