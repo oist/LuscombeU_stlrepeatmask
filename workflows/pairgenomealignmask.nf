@@ -11,6 +11,9 @@ include { REPEATMODELER_MASKER        } from '../modules/nf-core/repeatmodeler/r
 include { REPEATMODELER_BUILDDATABASE } from '../modules/nf-core/repeatmodeler/builddatabase/main'
 include { TANTAN                      } from '../modules/local/tantan.nf'
 include { CUSTOMMODULE                } from '../modules/local/custommodule.nf'
+include { SEQTK_CUTN as TANTAN_BED        } from '../modules/local/seqtk/cutn/main.nf'
+include { SEQTK_CUTN as WINDOWMASKER_BED  } from '../modules/local/seqtk/cutn/main.nf'
+include { SEQTK_CUTN as REPEATMODELER_BED } from '../modules/local/seqtk/cutn/main.nf'
 include { GFASTATS as GFSTTANTAN      } from '../modules/nf-core/gfastats/main'
 include { GFASTATS as GFSTREPEATMOD   } from '../modules/nf-core/gfastats/main'
 include { GFASTATS as GFSTWINDOWMASK  } from '../modules/nf-core/gfastats/main'
@@ -49,7 +52,14 @@ workflow PAIRGENOMEALIGNMASK {
     GFSTTANTAN (
         TANTAN.out.masked_fa
     )
-    
+
+    //
+    // MODULE: tantan_bed
+    //
+    TANTAN_BED {
+        TANTAN.out.masked_fa
+    }
+
     // MODULE: repeatmodeler_builddatabase
     //
     REPEATMODELER_BUILDDATABASE (
@@ -79,6 +89,13 @@ workflow PAIRGENOMEALIGNMASK {
     )
 
     //
+    // MODULE: repeatmodeler_bed
+    //
+    REPEATMODELER_BED {
+        REPEATMODELER_MASKER.out.fasta
+    }
+
+    //
     // MODULE: windowmasker_mkcounts
     //
     WINDOWMASKER_MKCOUNTS (
@@ -98,6 +115,13 @@ workflow PAIRGENOMEALIGNMASK {
     GFSTWINDOWMASK (
         WINDOWMASKER_USTAT.out.intervals
     )
+
+    //
+    // MODULE: windowmasker_bed
+    //
+    WINDOWMASKER_BED {
+        WINDOWMASKER_USTAT.out.intervals
+    }
 
     //
     // MODULE: CUSTOMMODULE
