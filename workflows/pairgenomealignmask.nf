@@ -110,7 +110,11 @@ workflow PAIRGENOMEALIGNMASK {
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOMMODULE.out.tsv)
 
 
-    ch_versions = ch_versions.mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
+    ch_versions = ch_versions
+        .mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
+        .mix(TANTAN.out.versions.first())
+        .mix(REPEATMODELER_REPEATMODELER.out.versions.first())
+        .mix(GFSTWINDOWMASK.out.versions.first())
 
     //
     // Collate and save software versions
