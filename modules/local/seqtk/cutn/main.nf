@@ -22,11 +22,8 @@ process SEQTK_CUTN {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    seqtk \\
-        cutN \\
-        $args \\
-        -g $fasta \\
-        > ${prefix}.bed
+    awk '/^>/ {print; next} {gsub(/[acgt]/, "N"); print}' $fasta |
+        seqtk cutN -gn 1 - > ${prefix}.mask.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
