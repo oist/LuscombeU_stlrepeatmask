@@ -10,7 +10,11 @@ include { REPEATMODELER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/r
 include { REPEATMODELER_MASKER        } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
 include { REPEATMODELER_BUILDDATABASE } from '../modules/nf-core/repeatmodeler/builddatabase/main'
 include { TANTAN                      } from '../modules/local/tantan.nf'
+include { BEDTOOLS_CUSTOM             } from '../modules/local/bedtools.nf'
 include { CUSTOMMODULE                } from '../modules/local/custommodule.nf'
+include { SEQTK_CUTN as TANTAN_BED        } from '../modules/local/seqtk.nf'
+include { SEQTK_CUTN as WINDOWMASKER_BED  } from '../modules/local/seqtk.nf'
+include { SEQTK_CUTN as REPEATMODELER_BED } from '../modules/local/seqtk.nf'
 include { GFASTATS as GFSTTANTAN      } from '../modules/nf-core/gfastats/main'
 include { GFASTATS as GFSTREPEATMOD   } from '../modules/nf-core/gfastats/main'
 include { GFASTATS as GFSTWINDOWMASK  } from '../modules/nf-core/gfastats/main'
@@ -49,7 +53,14 @@ workflow PAIRGENOMEALIGNMASK {
     GFSTTANTAN (
         TANTAN.out.masked_fa
     )
-    
+
+    //
+    // MODULE: tantan_bed
+    //
+    TANTAN_BED {
+        TANTAN.out.masked_fa
+    }
+
     // MODULE: repeatmodeler_builddatabase
     //
     REPEATMODELER_BUILDDATABASE (
@@ -78,6 +89,13 @@ workflow PAIRGENOMEALIGNMASK {
     )
 
     //
+    // MODULE: repeatmodeler_bed
+    //
+    REPEATMODELER_BED {
+        REPEATMODELER_MASKER.out.fasta
+    }
+
+    //
     // MODULE: windowmasker_mkcounts
     //
     WINDOWMASKER_MKCOUNTS (
@@ -99,6 +117,13 @@ workflow PAIRGENOMEALIGNMASK {
     )
 
     //
+    // MODULE: windowmasker_bed
+    //
+    WINDOWMASKER_BED {
+        WINDOWMASKER_USTAT.out.intervals
+    }
+
+    //
     // MODULE: CUSTOMMODULE
     //
     CUSTOMMODULE (
@@ -108,8 +133,23 @@ workflow PAIRGENOMEALIGNMASK {
     )
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOMMODULE.out.tsv)
 
+    //
+    // MODULE: bedtools_custom
+    //
+    BEDTOOLS_CUSTOM (
+        ch_samplesheet
+            .join(TANTAN_BED.out.bed_gz)
+            .join(WINDOWMASKER_BED.out.bed_gz)
+            .join(REPEATMODELER_BED.out.bed_gz)
+    )
 
-    ch_versions = ch_versions.mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
+    ch_versions = ch_versions
+        .mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
+        .mix(TANTAN.out.versions.first())
+        .mix(REPEATMODELER_REPEATMODELER.out.versions.first())
+        .mix(GFSTWINDOWMASK.out.versions.first())
+        .mix(TANTAN_BED.out.versions.first())
+        .mix(BEDTOOLS_CUSTOM.out.versions.first())
 
     //
     // Collate and save software versions
