@@ -8,8 +8,7 @@ process REPEATMODELER_MASKER {
         'biocontainers/repeatmodeler:2.0.5--pl5321hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(fasta)
-    tuple val(meta), path(ref)
+    tuple val(meta), path(fasta), path(ref)
 
     output:
     tuple val(meta), path("*.masked") , emit: fasta
