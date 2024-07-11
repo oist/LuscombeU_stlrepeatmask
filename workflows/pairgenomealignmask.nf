@@ -67,8 +67,7 @@ workflow PAIRGENOMEALIGNMASK {
     // MODULE: repeatmodeler_repeatmasker
     //
     REPEATMODELER_MASKER (
-        REPEATMODELER_REPEATMODELER.out.fasta,
-        ch_samplesheet
+        REPEATMODELER_REPEATMODELER.out.fasta.join(ch_samplesheet)
     )
 
     //
