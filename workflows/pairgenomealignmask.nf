@@ -149,6 +149,8 @@ workflow PAIRGENOMEALIGNMASK {
         .mix(TANTAN.out.versions.first())
         .mix(REPEATMODELER_REPEATMODELER.out.versions.first())
         .mix(GFSTWINDOWMASK.out.versions.first())
+        .mix(TANTAN_BED.out.versions.first())
+        .mix(BEDTOOLS_CUSTOM.out.versions.first())
 
     //
     // Collate and save software versions
