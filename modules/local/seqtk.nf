@@ -11,7 +11,7 @@ process SEQTK_CUTN {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("*.bed")    , emit: bed
+    tuple val(meta), path("*.bed.gz") , emit: bed_gz
     path "versions.yml"               , emit: versions
 
     when:
@@ -22,8 +22,10 @@ process SEQTK_CUTN {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
+    # Produces a compressed BED-3 file with the coordinates of soft-masked regions.
     awk '/^>/ {print; next} {gsub(/[acgt]/, "N"); print}' $fasta |
-        seqtk cutN -gn 1 - > ${prefix}.mask.bed
+        seqtk cutN -gn 1 - |
+        sort -k1,1 -k2,2n | gzip --best > ${prefix}.mask.bed.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -35,7 +37,8 @@ process SEQTK_CUTN {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    touch ${prefix}.bed
+    touch ${prefix}.mask.bed
+    gzip --best ${prefix}.mask.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
