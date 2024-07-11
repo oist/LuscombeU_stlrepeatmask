@@ -10,6 +10,7 @@ include { REPEATMODELER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/r
 include { REPEATMODELER_MASKER        } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
 include { REPEATMODELER_BUILDDATABASE } from '../modules/nf-core/repeatmodeler/builddatabase/main'
 include { TANTAN                      } from '../modules/local/tantan.nf'
+include { BEDTOOLS_CUSTOM             } from '../modules/local/bedtools.nf'
 include { CUSTOMMODULE                } from '../modules/local/custommodule.nf'
 include { SEQTK_CUTN as TANTAN_BED        } from '../modules/local/seqtk.nf'
 include { SEQTK_CUTN as WINDOWMASKER_BED  } from '../modules/local/seqtk.nf'
@@ -133,6 +134,15 @@ workflow PAIRGENOMEALIGNMASK {
     )
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOMMODULE.out.tsv)
 
+    //
+    // MODULE: bedtools_custom
+    //
+    BEDTOOLS_CUSTOM (
+        ch_samplesheet
+            .join(TANTAN_BED.out.bed_gz)
+            .join(WINDOWMASKER_BED.out.bed_gz)
+            .join(REPEATMODELER_BED.out.bed_gz)
+    )
 
     ch_versions = ch_versions
         .mix(WINDOWMASKER_MKCOUNTS.out.versions.first())

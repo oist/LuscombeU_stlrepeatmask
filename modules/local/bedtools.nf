@@ -1,4 +1,4 @@
-process BEDTOOLS_MASKFASTA {
+process BEDTOOLS_CUSTOM {
     tag "$meta.id"
     label 'process_single'
 
@@ -8,12 +8,13 @@ process BEDTOOLS_MASKFASTA {
         'biocontainers/bedtools:2.31.1--hf5e1c6e_0' }"
 
     input:
-    tuple val(meta), path(bed)
-    path  fasta
+    tuple val(meta), path(genome), path(tantan), path(windowmasker), path(repeatmasker)
 
     output:
-    tuple val(meta), path("*.fa"), emit: fasta
-    path "versions.yml"          , emit: versions
+    tuple val(meta), path("*.fasta.gz")    , emit: fasta
+    tuple val(meta), path("*_jaccard.txt") , emit: txt
+    tuple val(meta), path("*.bed.gz")      , emit: bed_gz
+    path "versions.yml"                    , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -22,12 +23,23 @@ process BEDTOOLS_MASKFASTA {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
+    bedtools jaccard -nonamecheck -a $tantan       -b $windowmasker         > ${prefix}_tantan_windowmasker_jaccard.txt
+    bedtools jaccard -nonamecheck -a $tantan       -b $repeatmasker         > ${prefix}_tantan_repeatmasker_jaccard.txt
+    bedtools jaccard -nonamecheck -a $repeatmasker -b $windowmasker         > ${prefix}_repeatmasker_windowmasker_jaccard.txt
+    
+    zcat $tantan $windowmasker               | sort -k1,1 -k2,2n | bedtools merge | gzip --best  > ${prefix}_tantan_windowmasker.bed.gz
+    zcat $tantan $repeatmasker               | sort -k1,1 -k2,2n | bedtools merge | gzip --best  > ${prefix}_tantan_repeatmasker.bed.gz
+    zcat $windowmasker $repeatmasker         | sort -k1,1 -k2,2n | bedtools merge | gzip --best  > ${prefix}_windowmasker_repeatmasker.bed.gz
+    zcat $tantan $windowmasker $repeatmasker | sort -k1,1 -k2,2n | bedtools merge | gzip --best  > ${prefix}_allmaskers.bed.gz
+
     bedtools \\
         maskfasta \\
-        $args \\
-        -fi $fasta \\
-        -bed $bed \\
-        -fo ${prefix}.fa
+        -soft \\
+        -fi $genome \\
+        -bed ${prefix}_allmaskers.bed.gz \\
+        -fo /dev/stdout |
+        gzip --best > ${prefix}_allmaskers.fasta.gz
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
