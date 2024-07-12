@@ -24,7 +24,7 @@ process CUSTOMMODULE {
     echo "# id: 'repeat summary'" > masking_stats_mqc.tsv
     echo "# section_name: 'repeat masking summary statistics'" >> masking_stats_mqc.tsv
     echo "# format: 'tsv'" >> masking_stats_mqc.tsv
-    echo "# plot_type: 'violin'" >> masking_stats_mqc.tsv
+    echo "# plot_type: 'table'" >> masking_stats_mqc.tsv
     echo "# description: 'This plot shows a brief summary of each genomes whose repeats has been masked'" >> masking_stats_mqc.tsv
     echo "# pconfig:" >> masking_stats_mqc.tsv
     echo "#    id: 'repeat summary'" >> masking_stats_mqc.tsv
