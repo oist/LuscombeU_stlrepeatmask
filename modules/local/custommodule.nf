@@ -20,23 +20,28 @@ process CUSTOMMODULE {
     script:
     def args = task.ext.args ?: ''
     """
-    echo "# id: 'repeat summary'" > repeatmqc_mqc.tsv
-    echo "# section_name: 'repeat masking summary statistics'" >> repeatmqc_mqc.tsv
-    echo "# format: 'tsv'" >> repeatmqc_mqc.tsv
-    echo "# plot_type: 'bargraph'" >> repeatmqc_mqc.tsv
-    echo "# description: 'This plot shows a brief summary of each genomes whose repeats has been masked'" >> repeatmqc_mqc.tsv
-    echo "# pconfig:" >> repeatmqc_mqc.tsv
-    echo "#    id: 'repeat summary'" >> repeatmqc_mqc.tsv
-    echo "#    title: 'repeat summary'" >> repeatmqc_mqc.tsv
-    echo "#    ylab: ''" >> repeatmqc_mqc.tsv
-    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases" >> repeatmqc_mqc.tsv
-    printf "\$(basename $assemt .assembly_summary)\t" >> repeatmqc_mqc.tsv
-    grep 'Total scaffold length' $assemt | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> repeatmqc_mqc.tsv
-    grep 'Total contig length' $assemt | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> repeatmqc_mqc.tsv
-    grep 'soft-masked bases' $assemt | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> repeatmqc_mqc.tsv
-    grep 'soft-masked bases' $assemw | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> repeatmqc_mqc.tsv
-    grep 'soft-masked bases' $assemr | tail -n 1 | awk '{print \$4}' >> repeatmqc_mqc.tsv
-
+    # Here we make the header
+    echo "# id: 'repeat summary'" > masking_stats_mqc.tsv
+    echo "# section_name: 'repeat masking summary statistics'" >> masking_stats_mqc.tsv
+    echo "# format: 'tsv'" >> masking_stats_mqc.tsv
+    echo "# plot_type: 'violin'" >> masking_stats_mqc.tsv
+    echo "# description: 'This plot shows a brief summary of each genomes whose repeats has been masked'" >> masking_stats_mqc.tsv
+    echo "# pconfig:" >> masking_stats_mqc.tsv
+    echo "#    id: 'repeat summary'" >> masking_stats_mqc.tsv
+    echo "#    title: 'repeat summary'" >> masking_stats_mqc.tsv
+    echo "#    ylab: ''" >> masking_stats_mqc.tsv
+    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases" >> masking_stats_mqc.tsv
+    # Here we loop on samples
+    for file in ${assemt}
+    do
+        SAMPLE=\$(basename \$file _tantan.assembly_summary)
+        printf "\$SAMPLE\t" >> masking_stats_mqc.tsv
+        grep 'Total scaffold length' \$file | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
+        grep 'Total contig length' \$file | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
+        grep 'soft-masked bases' \$file | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
+        grep 'soft-masked bases' \${SAMPLE}_windowmasker.assembly_summary | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
+        grep 'soft-masked bases' \${SAMPLE}_repeatmodeler.assembly_summary | tail -n 1 | awk '{print \$4}' >> masking_stats_mqc.tsv
+    done
 
     echo "# id: 'tantan repeat summary'" > tantanmqc_mqc.tsv
     echo "# section_name: 'tantan repeat masking summary statistics'" >> tantanmqc_mqc.tsv
