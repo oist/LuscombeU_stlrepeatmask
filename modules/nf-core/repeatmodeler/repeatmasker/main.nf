@@ -9,6 +9,7 @@ process REPEATMODELER_MASKER {
 
     input:
     tuple val(meta), path(fasta), path(ref)
+    val(species)
 
     output:
     tuple val(meta), path("*.masked") , emit: fasta
@@ -23,10 +24,11 @@ process REPEATMODELER_MASKER {
     script:
     def args    = task.ext.args ?: ''
     def prefix  = task.ext.prefix ?: "${meta.id}"
+    def libOrSpecies = species ? "-species ${species}" : "-lib $fasta"
     """
     RepeatMasker \\
-        -xsmall \\
-        -lib $fasta \\
+        -xsmall -pa 3 \\
+        -$libOrSpecies \\
         $ref \\
         $args \\
 

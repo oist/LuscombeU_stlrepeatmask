@@ -7,7 +7,9 @@
 include { WINDOWMASKER_USTAT          } from '../modules/nf-core/windowmasker/ustat/main'
 include { WINDOWMASKER_MKCOUNTS       } from '../modules/nf-core/windowmasker/mkcounts/main'
 include { REPEATMODELER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/repeatmodeler/main'
-include { REPEATMODELER_MASKER        } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
+include { REPEATMODELER_MASKER as REPEATMODELER_MASKER_DFAM          } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
+include { REPEATMODELER_MASKER as REPEATMODELER_MASKER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
+include { REPEATMODELER_MASKER as REPEATMODELER_MASKER_EXTERNAL      } from '../modules/nf-core/repeatmodeler/repeatmasker/main'
 include { REPEATMODELER_BUILDDATABASE } from '../modules/nf-core/repeatmodeler/builddatabase/main'
 include { TANTAN                      } from '../modules/local/tantan.nf'
 include { BEDTOOLS_CUSTOM             } from '../modules/local/bedtools.nf'
@@ -77,22 +79,38 @@ workflow PAIRGENOMEALIGNMASK {
     //
     // MODULE: repeatmodeler_repeatmasker
     //
-    REPEATMODELER_MASKER (
-        REPEATMODELER_REPEATMODELER.out.fasta.join(ch_samplesheet)
+
+    repeatmasker_channel_1 = REPEATMODELER_REPEATMODELER.out.fasta.join(ch_samplesheet)
+
+    REPEATMODELER_MASKER_REPEATMODELER (
+        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_REPM"] , fasta, ref ] },
+        []
     )
+
+    REPEATMODELER_MASKER_DFAM (
+        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_DFAM"] , fasta, ref ] },
+        "Chordata"
+    )
+
+    if (params.repeatlib) {
+    REPEATMODELER_MASKER_EXTERNAL (
+        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_EXTR"] , file(params.repeatlib, checkIfExists:true), ref ] },
+        []
+    )
+    }
 
     //
     // MODULE: gfastats_repeatmodeler
     //
     GFSTREPEATMOD (
-        REPEATMODELER_MASKER.out.fasta
+        REPEATMODELER_MASKER_REPEATMODELER.out.fasta
     )
 
     //
     // MODULE: repeatmodeler_bed
     //
     REPEATMODELER_BED {
-        REPEATMODELER_MASKER.out.fasta
+        REPEATMODELER_MASKER_REPEATMODELER.out.fasta
     }
 
     //
