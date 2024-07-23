@@ -30,17 +30,26 @@ process CUSTOMMODULE {
     echo "#    id: 'repeat summary'" >> masking_stats_mqc.tsv
     echo "#    title: 'repeat summary'" >> masking_stats_mqc.tsv
     echo "#    ylab: ''" >> masking_stats_mqc.tsv
-    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases" >> masking_stats_mqc.tsv
+    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases (REPM)\trmodeler masked bases (DFAM)\trmodeler masked bases (EXTR)" >> masking_stats_mqc.tsv
     # Here we loop on samples
     for file in ${assemt}
     do
         SAMPLE=\$(basename \$file _tantan.assembly_summary)
         printf "\$SAMPLE\t" >> masking_stats_mqc.tsv
-        grep 'Total scaffold length' \$file | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
-        grep 'Total contig length' \$file | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
-        grep 'soft-masked bases' \$file | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
-        grep 'soft-masked bases' \${SAMPLE}_windowmasker.assembly_summary | tail -n 1 | awk '{print \$4}' | tr '\n' '\t' >> masking_stats_mqc.tsv
-        grep 'soft-masked bases' \${SAMPLE}_repeatmodeler.assembly_summary | tail -n 1 | awk '{print \$4}' >> masking_stats_mqc.tsv
+        grep 'Total scaffold length' \$file | tail -n 1 | awk '{printf \$4"\t"}' >> masking_stats_mqc.tsv
+        grep 'Total contig length'   \$file | tail -n 1 | awk '{printf \$4"\t"}' >> masking_stats_mqc.tsv
+        grep 'soft-masked bases'     \$file | tail -n 1 | awk '{printf \$4"\t"}' >> masking_stats_mqc.tsv
+        grep 'soft-masked bases' \${SAMPLE}_windowmasker.assembly_summary | awk '{printf \$4}' >> masking_stats_mqc.tsv
+        for REPM_RUN in REPM DFAM EXTR
+        do
+            REPM_SUMMARY=\${SAMPLE}_\${REPM_RUN}_repeatmodeler.assembly_summary
+            if [ -e \$REPM_SUMMARY ] ; then
+                grep 'soft-masked bases' \$REPM_SUMMARY | tail -n 1 | awk '{printf "\t"\$4}' >> masking_stats_mqc.tsv
+            else
+                printf '\tNA' >> masking_stats_mqc.tsv
+            fi
+        done
+        printf '\n' >> masking_stats_mqc.tsv
     done
 
     echo "# id: 'tantan repeat summary'" > tantanmqc_mqc.tsv
