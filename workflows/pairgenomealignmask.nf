@@ -86,7 +86,7 @@ workflow PAIRGENOMEALIGNMASK {
     repeatmasker_channel_1 = REPEATMODELER_REPEATMODELER.out.fasta.join(ch_samplesheet)
 
     REPEATMODELER_MASKER_REPEATMODELER (
-        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_REPM"] , fasta, ref ] },
+        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_REPM", id_old:meta.id] , fasta, ref ] },
         []
     )
     GFSTRMSK_RMOD (
@@ -121,7 +121,7 @@ workflow PAIRGENOMEALIGNMASK {
     // MODULE: repeatmodeler_bed
     //
     REPEATMODELER_BED {
-        REPEATMODELER_MASKER_REPEATMODELER.out.fasta
+        REPEATMODELER_MASKER_REPEATMODELER.out.fasta.map {meta, fasta -> [ [id:meta.id_old], fasta ]}
     }
 
     //
