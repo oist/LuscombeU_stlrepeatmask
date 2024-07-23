@@ -18,7 +18,9 @@ include { SEQTK_CUTN as TANTAN_BED        } from '../modules/local/seqtk.nf'
 include { SEQTK_CUTN as WINDOWMASKER_BED  } from '../modules/local/seqtk.nf'
 include { SEQTK_CUTN as REPEATMODELER_BED } from '../modules/local/seqtk.nf'
 include { GFASTATS as GFSTTANTAN      } from '../modules/nf-core/gfastats/main'
-include { GFASTATS as GFSTREPEATMOD   } from '../modules/nf-core/gfastats/main'
+include { GFASTATS as GFSTRMSK_DFAM   } from '../modules/nf-core/gfastats/main'
+include { GFASTATS as GFSTRMSK_RMOD   } from '../modules/nf-core/gfastats/main'
+include { GFASTATS as GFSTRMSK_EXTR   } from '../modules/nf-core/gfastats/main'
 include { GFASTATS as GFSTWINDOWMASK  } from '../modules/nf-core/gfastats/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap            } from 'plugin/nf-validation'
@@ -78,6 +80,7 @@ workflow PAIRGENOMEALIGNMASK {
 
     //
     // MODULE: repeatmodeler_repeatmasker
+    // MODULE: gfastats
     //
 
     repeatmasker_channel_1 = REPEATMODELER_REPEATMODELER.out.fasta.join(ch_samplesheet)
@@ -86,25 +89,33 @@ workflow PAIRGENOMEALIGNMASK {
         repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_REPM"] , fasta, ref ] },
         []
     )
-
-    REPEATMODELER_MASKER_DFAM (
-        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_DFAM"] , fasta, ref ] },
-        "Chordata"
-    )
-
-    if (params.repeatlib) {
-    REPEATMODELER_MASKER_EXTERNAL (
-        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_EXTR"] , file(params.repeatlib, checkIfExists:true), ref ] },
-        []
-    )
-    }
-
-    //
-    // MODULE: gfastats_repeatmodeler
-    //
-    GFSTREPEATMOD (
+    GFSTRMSK_RMOD (
         REPEATMODELER_MASKER_REPEATMODELER.out.fasta
     )
+
+    GFSTRMSK_DFAM_maybeout = channel.empty()
+    if (params.taxon) {
+        REPEATMODELER_MASKER_DFAM (
+            repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_DFAM"] , fasta, ref ] },
+            params.taxon
+        )
+        GFSTRMSK_DFAM (
+            REPEATMODELER_MASKER_DFAM.out.fasta
+        )
+        GFSTRMSK_DFAM_maybeout = GFSTRMSK_DFAM.out.assembly_summary
+    }
+
+    GFSTRMSK_EXTR_maybeout = channel.empty()
+    if (params.repeatlib) {
+        REPEATMODELER_MASKER_EXTERNAL (
+            repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_EXTR"] , file(params.repeatlib, checkIfExists:true), ref ] },
+            []
+        )
+        GFSTRMSK_EXTR (
+            REPEATMODELER_MASKER_EXTERNAL.out.fasta
+        )
+        GFSTRMSK_EXTR_maybeout = GFSTRMSK_EXTR.out.assembly_summary
+    }
 
     //
     // MODULE: repeatmodeler_bed
@@ -144,10 +155,13 @@ workflow PAIRGENOMEALIGNMASK {
     //
     // MODULE: CUSTOMMODULE
     //
-    CUSTOMMODULE (
-        GFSTTANTAN.out.assembly_summary.collect{it[1]},
-        GFSTWINDOWMASK.out.assembly_summary.collect{it[1]},
-        GFSTREPEATMOD.out.assembly_summary.collect{it[1]}
+    CUSTOMMODULE ( channel.empty()
+        .mix(    GFSTTANTAN.out.assembly_summary.map {it[1]} )
+        .mix(GFSTWINDOWMASK.out.assembly_summary.map {it[1]} )
+        .mix( GFSTRMSK_RMOD.out.assembly_summary.map {it[1]} )
+        .mix(GFSTRMSK_DFAM_maybeout             .map {it[1]} )
+        .mix(GFSTRMSK_EXTR_maybeout             .map {it[1]} )
+        .collect()
     )
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOMMODULE.out.tsv)
 

@@ -52,8 +52,8 @@
             "description": "",
             "default": "",
             "properties": {
-                "species": {
-                    "description": "Name of a taxonomic node that can subset the DFAM library",
+                "taxon": {
+                    "description": "Name of a taxonomic node that can subset the DFAM library.  It will be passed to the `-species` parameter of RepeatMasker.",
                     "type": "string",
                     "fa_icon": "fas fa-paw"
                 },
