@@ -3,13 +3,14 @@ process REPEATMODELER_MASKER {
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
+    def singularity_image = params.singularity_image ?: 'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0'
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0':
+        singularity_image :
         'biocontainers/repeatmodeler:2.0.5--pl5321hdfd78af_0' }"
 
     input:
     tuple val(meta), path(fasta), path(ref)
-    val(species)
+    val(taxon)
 
     output:
     tuple val(meta), path("*.masked") , emit: fasta
@@ -24,11 +25,11 @@ process REPEATMODELER_MASKER {
     script:
     def args    = task.ext.args ?: ''
     def prefix  = task.ext.prefix ?: "${meta.id}"
-    def libOrSpecies = species ? "-species ${species}" : "-lib $fasta"
+    def libOrTaxon = taxon ? "-species ${taxon}" : "-lib $fasta"
     """
     RepeatMasker \\
         -xsmall -pa 3 \\
-        -$libOrSpecies \\
+        -$libOrTaxon \\
         $ref \\
         $args \\
 

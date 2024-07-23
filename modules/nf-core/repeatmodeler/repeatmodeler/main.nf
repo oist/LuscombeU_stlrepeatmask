@@ -3,8 +3,9 @@ process REPEATMODELER_REPEATMODELER {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
+    def singularity_image = params.singularity_image ?: 'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0'
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0':
+        singularity_image :
         'biocontainers/repeatmodeler:2.0.5--pl5321hdfd78af_0' }"
 
     input:
