@@ -35,6 +35,15 @@ nextflow run oist/Luscombe_pairgenomealign-preprocess \
    --outdir <OUTDIR>
 ```
 
+Test the pipeline (adapt the `-w` option for your own case!
+
+```bash
+nextflow run oist/Luscombe_pairgenomealign-preprocess \
+   -profile oist,test \
+   -w /flash/LuscombeU/`whoami`/cache/deletemeTest \
+   --outdir results_test
+```
+
 ## Pipeline output
 
 TBD
