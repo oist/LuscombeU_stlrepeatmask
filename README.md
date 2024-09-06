@@ -49,7 +49,7 @@ query_2,path-to-query-genome-file-two.fasta
 Then run the pipeline as usual:
 
 ```bash
-nextflow run oist/Luscombe_pairgenomealign-preprocess \
+nextflow run oist/LuscombeU_pairgenomealign-preprocess \
    -profile oist \
    --input samplesheet.csv \
    --outdir <OUTDIR>
@@ -58,7 +58,7 @@ nextflow run oist/Luscombe_pairgenomealign-preprocess \
 Test the pipeline (adapt the `-w` option for your own case!
 
 ```bash
-nextflow run oist/Luscombe_pairgenomealign-preprocess \
+nextflow run oist/LuscombeU_pairgenomealign-preprocess \
    -profile oist,test \
    -w /flash/LuscombeU/`whoami`/cache/deletemeTest \
    --outdir results_test
