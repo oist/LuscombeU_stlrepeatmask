@@ -55,10 +55,10 @@ nextflow run oist/LuscombeU_pairgenomealign-preprocess \
    --outdir <OUTDIR>
 ```
 
-Test the pipeline (adapt the `-w` option for your own case!
+Test the dev branch of the pipeline (adapt the `-w` option for your own case!
 
 ```bash
-nextflow run oist/LuscombeU_pairgenomealign-preprocess \
+nextflow run oist/LuscombeU_pairgenomealign-preprocess -r dev \
    -profile oist,test \
    -w /flash/LuscombeU/`whoami`/cache/deletemeTest \
    --outdir results_test
@@ -68,7 +68,7 @@ nextflow run oist/LuscombeU_pairgenomealign-preprocess \
 
  - Point `--repeatlib` to a FASTA file to have an extra RepeatMasker run using it as a library.
  - Set `--taxon` to a taxon name to have an extra RepeatMasker run using the `-species` option set to that taxon.
- - Point --`singularity_image` to a local file path like `/flash/LuscombeU/singularity.cacheDir/tetools_1.88.5.sif` or an URL to singularity image to replace the default one.
+ - Point `--singularity_image` to a local file path like `/flash/LuscombeU/singularity.cacheDir/tetools_1.88.5.sif` or an URL to singularity image to replace the default one.
 
 ## Pipeline output
 
