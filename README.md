@@ -4,9 +4,29 @@ Genome pre-processing pipeline
 This is a local pipeline to pre-process downloaded genomes before feeding them
 to <https://github.com/nf-core/pairgenomealign>.
 
-## Introduction
+## What it does:
 
-This pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) initative, and reused here under the [MIT license](https://github.com/nf-core/tools/blob/master/LICENSE).
+This pipeline takes genomes as inputs and soft-masks their repeats with the following software:
+
+ - tantan
+ - windowmasker
+ - repeatmasker
+
+The input of repeatmasker can be any of:
+ - repeatmodeller (default)
+ - DFAM
+ - a custom repeat library.
+
+Repeatmasker and repeatmodeller are run from the same image as the standard _nf-core_ module.  But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container)
+
+It reports the number of masked bases using 
+
+bedtools  custommodule  gfstrmsk  gfsttantan  gfstwindowmask  multiqc  pipeline_info  repeatmodeler  tantan  windowmasker
+
+
+## Disclaimer
+
+This is not an official pipeline. This pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) initative, and reused here under the [MIT license](https://github.com/nf-core/tools/blob/master/LICENSE).
  
 > The nf-core framework for community-curated bioinformatics pipelines.
 >
@@ -43,6 +63,12 @@ nextflow run oist/Luscombe_pairgenomealign-preprocess \
    -w /flash/LuscombeU/`whoami`/cache/deletemeTest \
    --outdir results_test
 ```
+
+## Options
+
+ - Point `--repeatlib` to a FASTA file to have an extra RepeatMasker run using it as a library.
+ - Set `--taxon` to a taxon name to have an extra RepeatMasker run using the `-species` option set to that taxon.
+ - Point --`singularity_image` to a local file path like `/flash/LuscombeU/singularity.cacheDir/tetools_1.88.5.sif` or an URL to singularity image to replace the default one.
 
 ## Pipeline output
 
