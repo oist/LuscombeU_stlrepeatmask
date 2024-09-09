@@ -47,13 +47,6 @@
                             "modules"
                         ]
                     },
-                    "windowmasker/convert": {
-                        "branch": "master",
-                        "git_sha": "32cac29d4a92220965dace68a1fb0bb2e3547cac",
-                        "installed_by": [
-                            "modules"
-                        ]
-                    },
                     "windowmasker/mkcounts": {
                         "branch": "master",
                         "git_sha": "32cac29d4a92220965dace68a1fb0bb2e3547cac",
