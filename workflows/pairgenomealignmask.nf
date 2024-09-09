@@ -4,6 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { GUNZIP                      } from '../modules/nf-core/gunzip/main'
 include { WINDOWMASKER_USTAT          } from '../modules/nf-core/windowmasker/ustat/main'
 include { WINDOWMASKER_MKCOUNTS       } from '../modules/nf-core/windowmasker/mkcounts/main'
 include { REPEATMODELER_REPEATMODELER } from '../modules/nf-core/repeatmodeler/repeatmodeler/main'
@@ -44,11 +45,18 @@ workflow PAIRGENOMEALIGNMASK {
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
 
+    if (params.gzipped_input) {
+        GUNZIP(ch_samplesheet)
+        input_genomes = GUNZIP.out.gunzip
+    } else {
+        input_genomes = ch_samplesheet
+    }
+
     //
     // MODULE: tantan
     //
     TANTAN (
-        ch_samplesheet
+        input_genomes
     )
     
     //
@@ -68,7 +76,7 @@ workflow PAIRGENOMEALIGNMASK {
     // MODULE: repeatmodeler_builddatabase
     //
     REPEATMODELER_BUILDDATABASE (
-        ch_samplesheet
+        input_genomes
     )
 
     //
@@ -83,7 +91,7 @@ workflow PAIRGENOMEALIGNMASK {
     // MODULE: gfastats
     //
 
-    repeatmasker_channel_1 = REPEATMODELER_REPEATMODELER.out.fasta.join(ch_samplesheet)
+    repeatmasker_channel_1 = REPEATMODELER_REPEATMODELER.out.fasta.join(input_genomes)
 
     REPEATMODELER_MASKER_REPEATMODELER (
         repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_REPM", id_old:meta.id] , fasta, ref ] },
@@ -128,14 +136,14 @@ workflow PAIRGENOMEALIGNMASK {
     // MODULE: windowmasker_mkcounts
     //
     WINDOWMASKER_MKCOUNTS (
-        ch_samplesheet
+        input_genomes
     )
 
     //
     // MODULE: windowmasker_ustat
     //
     WINDOWMASKER_USTAT (
-        WINDOWMASKER_MKCOUNTS.out.counts.join(ch_samplesheet)
+        WINDOWMASKER_MKCOUNTS.out.counts.join(input_genomes)
     )
 
     //
@@ -169,7 +177,7 @@ workflow PAIRGENOMEALIGNMASK {
     // MODULE: bedtools_custom
     //
     BEDTOOLS_CUSTOM (
-        ch_samplesheet
+        input_genomes
             .join(TANTAN_BED.out.bed_gz)
             .join(WINDOWMASKER_BED.out.bed_gz)
             .join(REPEATMODELER_BED.out.bed_gz)

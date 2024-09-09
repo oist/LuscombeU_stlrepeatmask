@@ -42,9 +42,12 @@ First make a sample sheet with usual _nf-core_ pipelines.
 
 ```csv
 sample,fasta
-query_1,path-to-query-genome-file-one.fasta
-query_2,path-to-query-genome-file-two.fasta
+query_1,path-to-query-genome-file-one.fasta.gz
+query_2,path-to-query-genome-file-two.fasta.gz
 ```
+
+If the input is not compressed then pass the `--gzipped_input=false` parameter.
+Note that mixing compressed and uncompressed input is not supported.
 
 Then run the pipeline as usual:
 
@@ -59,6 +62,15 @@ Test the dev branch of the pipeline (adapt the `-w` option for your own case!
 
 ```bash
 nextflow run oist/LuscombeU_pairgenomealign-preprocess -r dev \
+   -profile oist,test \
+   -w /flash/LuscombeU/`whoami`/cache/deletemeTest \
+   --outdir results_test
+```
+
+Test the local checkout
+
+```bash
+nextflow run ./main.nf \
    -profile oist,test \
    -w /flash/LuscombeU/`whoami`/cache/deletemeTest \
    --outdir results_test
