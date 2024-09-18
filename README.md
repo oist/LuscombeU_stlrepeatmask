@@ -81,10 +81,20 @@ nextflow run ./main.nf \
  - Point `--repeatlib` to a FASTA file to have an extra RepeatMasker run using it as a library.
  - Set `--taxon` to a taxon name to have an extra RepeatMasker run using the `-species` option set to that taxon.
  - Point `--singularity_image` to a local file path like `/flash/LuscombeU/singularity.cacheDir/tetools_1.88.5.sif` or an URL to singularity image to replace the default one.
+ - Set the `--gzipped_input=false` parameter when the input is not compressed..
 
 ## Pipeline output
 
-TBD
+### `tantan`
+
+ - Masked genome file (TODO: compress it)
+ - BED file representing the masked regions.
+
+### `windowmasker`
+
+ - Masked genome file (TODO: compress it)
+ - BED file representing the masked regions.
+ - ustat output file (TODO: remove it)
 
 ## Credits
 
