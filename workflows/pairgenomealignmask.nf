@@ -52,112 +52,52 @@ workflow PAIRGENOMEALIGNMASK {
         input_genomes = ch_samplesheet
     }
 
+    // Simple tandem repeat masking with tantan
     //
-    // MODULE: tantan
-    //
-    TANTAN (
-        input_genomes
-    )
-    
-    //
-    // MODULE: gfastats_tantan
-    //
-    GFSTTANTAN (
-        TANTAN.out.masked_fa
-    )
+    TANTAN ( input_genomes )
+    GFSTTANTAN ( TANTAN.out.masked_fa )
+    TANTAN_BED ( TANTAN.out.masked_fa )
 
+    // De novo repeat detection with WindowMasker
     //
-    // MODULE: tantan_bed
-    //
-    TANTAN_BED {
-        TANTAN.out.masked_fa
-    }
+    WINDOWMASKER_MKCOUNTS ( input_genomes )
+    WINDOWMASKER_USTAT ( WINDOWMASKER_MKCOUNTS.out.counts.join(input_genomes) )
+    GFSTWINDOWMASK ( WINDOWMASKER_USTAT.out.intervals )
+    WINDOWMASKER_BED ( WINDOWMASKER_USTAT.out.intervals )
 
-    // MODULE: repeatmodeler_builddatabase
+    // De novo repeat discovery and detection with RepeatModeller and RepeatMasker
     //
-    REPEATMODELER_BUILDDATABASE (
-        input_genomes
-    )
-
-    //
-    // MODULE: repeatmodeler_repeatmodeler
-    //
-    REPEATMODELER_REPEATMODELER (
-        REPEATMODELER_BUILDDATABASE.out.db
-    )
-
-    //
-    // MODULE: repeatmodeler_repeatmasker
-    // MODULE: gfastats
-    //
-
-    repeatmasker_channel_1 = REPEATMODELER_REPEATMODELER.out.fasta.join(input_genomes)
-
+    REPEATMODELER_BUILDDATABASE ( input_genomes )
+    REPEATMODELER_REPEATMODELER ( REPEATMODELER_BUILDDATABASE.out.db )
     REPEATMODELER_MASKER_REPEATMODELER (
-        repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_REPM", id_old:meta.id] , fasta, ref ] },
+        REPEATMODELER_REPEATMODELER.out.fasta
+            .join(input_genomes)
+            .map {meta, fasta, ref -> [ [id:"${meta.id}_REPM", id_old:meta.id] , fasta, ref ] },
         []
     )
-    GFSTRMSK_RMOD (
-        REPEATMODELER_MASKER_REPEATMODELER.out.fasta
-    )
+    GFSTRMSK_RMOD ( REPEATMODELER_MASKER_REPEATMODELER.out.fasta )
+    REPEATMODELER_BED ( REPEATMODELER_MASKER_REPEATMODELER.out.fasta.map {meta, fasta -> [ [id:meta.id_old], fasta ]} )
 
+    // Repeat detection with DFAM and RepeatMasker
+    //
     GFSTRMSK_DFAM_maybeout = channel.empty()
     if (params.taxon) {
         REPEATMODELER_MASKER_DFAM (
-            repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_DFAM"] , fasta, ref ] },
+            input_genomes.map {meta, fasta -> [ [id:"${meta.id}_DFAM"] , [], fasta ] },
             params.taxon
         )
-        GFSTRMSK_DFAM (
-            REPEATMODELER_MASKER_DFAM.out.fasta
-        )
+        GFSTRMSK_DFAM ( REPEATMODELER_MASKER_DFAM.out.fasta )
         GFSTRMSK_DFAM_maybeout = GFSTRMSK_DFAM.out.assembly_summary
     }
 
     GFSTRMSK_EXTR_maybeout = channel.empty()
     if (params.repeatlib) {
         REPEATMODELER_MASKER_EXTERNAL (
-            repeatmasker_channel_1.map {meta, fasta, ref -> [ [id:"${meta.id}_EXTR"] , file(params.repeatlib, checkIfExists:true), ref ] },
+            input_genomes.map {meta, ref -> [ [id:"${meta.id}_EXTR"] , file(params.repeatlib, checkIfExists:true), ref ] },
             []
         )
-        GFSTRMSK_EXTR (
-            REPEATMODELER_MASKER_EXTERNAL.out.fasta
-        )
+        GFSTRMSK_EXTR ( REPEATMODELER_MASKER_EXTERNAL.out.fasta )
         GFSTRMSK_EXTR_maybeout = GFSTRMSK_EXTR.out.assembly_summary
-    }
-
-    //
-    // MODULE: repeatmodeler_bed
-    //
-    REPEATMODELER_BED {
-        REPEATMODELER_MASKER_REPEATMODELER.out.fasta.map {meta, fasta -> [ [id:meta.id_old], fasta ]}
-    }
-
-    //
-    // MODULE: windowmasker_mkcounts
-    //
-    WINDOWMASKER_MKCOUNTS (
-        input_genomes
-    )
-
-    //
-    // MODULE: windowmasker_ustat
-    //
-    WINDOWMASKER_USTAT (
-        WINDOWMASKER_MKCOUNTS.out.counts.join(input_genomes)
-    )
-
-    //
-    // MODULE: gfastats_windowmasker
-    //
-    GFSTWINDOWMASK (
-        WINDOWMASKER_USTAT.out.intervals
-    )
-
-    //
-    // MODULE: windowmasker_bed
-    //
-    WINDOWMASKER_BED {
-        WINDOWMASKER_USTAT.out.intervals
     }
 
     //
