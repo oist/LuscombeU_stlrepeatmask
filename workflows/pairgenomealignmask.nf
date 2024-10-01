@@ -16,15 +16,15 @@ include { SEQTK_CUTN           as WINDOWMASKER_BED           } from '../modules/
 
 include { REPEATMODELER_REPEATMODELER                        } from '../modules/nf-core/repeatmodeler/repeatmodeler/main'
 include { REPEATMODELER_BUILDDATABASE                        } from '../modules/nf-core/repeatmodeler/builddatabase/main'
-include { REPEATMODELER_MASKER as REPEATMODELER_REPEATMASKER } from '../modules/local/repeatmasker/main'
+include { REPEATMODELER_MASKER as REPEATMODELER_REPEATMASKER } from '../modules/local/repeatmasker.nf'
 include { GFASTATS             as REPEATMODELER_STATS        } from '../modules/nf-core/gfastats/main'
 include { SEQTK_CUTN           as REPEATMODELER_BED          } from '../modules/local/seqtk.nf'
 
-include { REPEATMODELER_MASKER as DFAM_REPEATMASKER          } from '../modules/local/repeatmasker/main'
+include { REPEATMODELER_MASKER as DFAM_REPEATMASKER          } from '../modules/local/repeatmasker.nf'
 include { GFASTATS             as DFAM_STATS                 } from '../modules/nf-core/gfastats/main'
 include { SEQTK_CUTN           as DFAM_BED                   } from '../modules/local/seqtk.nf'
 
-include { REPEATMODELER_MASKER as EXTLIB_REPEATMASKER        } from '../modules/local/repeatmasker/main'
+include { REPEATMODELER_MASKER as EXTLIB_REPEATMASKER        } from '../modules/local/repeatmasker.nf'
 include { GFASTATS             as EXTLIB_STATS               } from '../modules/nf-core/gfastats/main'
 include { SEQTK_CUTN           as EXTLIB_BED                 } from '../modules/local/seqtk.nf'
 
