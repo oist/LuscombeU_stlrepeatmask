@@ -13,7 +13,7 @@ process REPEATMODELER_MASKER {
     val(taxon)
 
     output:
-    tuple val(meta), path("*.masked") , emit: fasta
+    tuple val(meta), path("*.masked.fa.gz") , emit: fasta
     tuple val(meta), path("*.cat")    , emit: cat
     tuple val(meta), path("*.out")    , emit: out
     tuple val(meta), path("*.tbl")    , emit: tbl
@@ -33,7 +33,8 @@ process REPEATMODELER_MASKER {
         $ref \\
         $args \\
 
-    mv ${ref}.masked ${prefix}.masked
+    mv ${ref}.masked ${prefix}.masked.fa
+    gzip --best --no-name ${prefix}.masked.fa
     mv ${ref}.out    ${prefix}.out
     mv ${ref}.tbl    ${prefix}.tbl
     if [ -e ${ref}.cat ] ; then mv ${ref}.cat ${prefix}.cat; fi
