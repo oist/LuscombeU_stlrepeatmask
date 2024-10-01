@@ -82,7 +82,7 @@ nextflow run ./main.nf \
 
 ### `tantan`, `repeatmodeler`, `windowmasker`, `dfam` (optional), `extlib` (optional)
 
- - Masked genome file (TODO: compress it)
+ - Masked genome file (compressed).
  - BED file representing the masked regions.
  - Summary statistics of the softmasked genome.
 
