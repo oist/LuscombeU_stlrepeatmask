@@ -1,4 +1,4 @@
-process WINDOWMASKER_MKCOUNTS {
+process WINDOWMASKER_MASK {
     tag "$meta.id"
     label 'process_low'
 
@@ -11,8 +11,9 @@ process WINDOWMASKER_MKCOUNTS {
     tuple val(meta), path(ref)
 
     output:
-    tuple val(meta), path("*.txt")  , emit: counts
-    path "versions.yml"             , emit: versions
+    tuple val(meta), path("*.txt")          , emit: counts
+    tuple val(meta), path("*.masked.fa.gz") , emit: masked_fa
+    path "versions.yml"                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,19 +22,21 @@ process WINDOWMASKER_MKCOUNTS {
     def args    = task.ext.args     ?: ""
     def prefix  = task.ext.prefix   ?: "${meta.id}"
 
-    def memory  = 3072
-    if (!task.memory) {
-        log.info '[WINDOWMASKER: MK_COUNTS] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
-    } else {
-        memory  = (task.memory.toMega()).intValue()
-    }
-
     """
     windowmasker -mk_counts \\
         $args \\
-        -mem ${memory} \\
+        -mem ${(task.memory.toMega()).intValue()} \\
         -in ${ref} \\
         -out ${prefix}.txt
+
+    windowmasker -ustat \\
+        ${prefix}.txt \\
+        $args \\
+        -outfmt fasta \\
+        -in ${ref} \\
+        -out ${prefix}.masked.fa
+
+    gzip --best --no-name ${prefix}.masked.fa
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -45,7 +48,8 @@ process WINDOWMASKER_MKCOUNTS {
     def prefix  = task.ext.prefix   ?: "${meta.id}"
 
     """
-    touch ${prefix}.txt
+    touch ${prefix}.masked.fa
+    gzip --no-name ${prefix}.masked.fa
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

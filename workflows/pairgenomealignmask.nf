@@ -10,8 +10,7 @@ include { TANTAN               as TANTAN_MASK                } from '../modules/
 include { GFASTATS             as TANTAN_STATS               } from '../modules/nf-core/gfastats/main'
 include { SEQTK_CUTN           as TANTAN_BED                 } from '../modules/local/seqtk.nf'
 
-include { WINDOWMASKER_USTAT                                 } from '../modules/nf-core/windowmasker/ustat/main'
-include { WINDOWMASKER_MKCOUNTS                              } from '../modules/nf-core/windowmasker/mkcounts/main'
+include { WINDOWMASKER_MASK                                  } from '../modules/local/windowmasker.nf'
 include { GFASTATS             as WINDOWMASKER_STATS         } from '../modules/nf-core/gfastats/main'
 include { SEQTK_CUTN           as WINDOWMASKER_BED           } from '../modules/local/seqtk.nf'
 
@@ -69,11 +68,9 @@ workflow PAIRGENOMEALIGNMASK {
 
     // De novo repeat detection with WindowMasker
     //
-    WINDOWMASKER_INPUT = input_genomes.map { meta, ref -> [ [id:"${meta.id}_windowmasker", key:meta.id], ref ] }
-    WINDOWMASKER_MKCOUNTS ( WINDOWMASKER_INPUT )
-    WINDOWMASKER_USTAT    ( WINDOWMASKER_MKCOUNTS.out.counts.join(WINDOWMASKER_INPUT) )
-    WINDOWMASKER_STATS    ( WINDOWMASKER_USTAT.out.intervals )
-    WINDOWMASKER_BED      ( WINDOWMASKER_USTAT.out.intervals )
+    WINDOWMASKER_MASK  ( input_genomes.map { meta, ref -> [ [id:"${meta.id}_windowmasker", key:meta.id], ref ] } )
+    WINDOWMASKER_STATS ( WINDOWMASKER_MASK.out.masked_fa )
+    WINDOWMASKER_BED   ( WINDOWMASKER_MASK.out.masked_fa )
 
     // De novo repeat discovery and detection with RepeatModeller and RepeatMasker
     //
@@ -135,7 +132,7 @@ workflow PAIRGENOMEALIGNMASK {
     )
 
     ch_versions = ch_versions
-        .mix(WINDOWMASKER_MKCOUNTS.out.versions.first())
+        .mix(WINDOWMASKER_MASK.out.versions.first())
         .mix(TANTAN_MASK.out.versions.first())
         .mix(REPEATMODELER_REPEATMODELER.out.versions.first())
         .mix(WINDOWMASKER_STATS.out.versions.first())
