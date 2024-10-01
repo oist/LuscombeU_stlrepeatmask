@@ -19,11 +19,6 @@ The input of repeatmasker can be any of:
 
 Repeatmasker and repeatmodeller are run from the same image as the standard _nf-core_ module.  But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container)
 
-It reports the number of masked bases using 
-
-bedtools  custommodule  gfstrmsk  gfsttantan  gfstwindowmask  multiqc  pipeline_info  repeatmodeler  tantan  windowmasker
-
-
 ## Disclaimer
 
 This is not an official pipeline. This pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) initative, and reused here under the [MIT license](https://github.com/nf-core/tools/blob/master/LICENSE).
@@ -85,16 +80,11 @@ nextflow run ./main.nf \
 
 ## Pipeline output
 
-### `tantan`
+### `tantan`, `repeatmodeler`, `windowmasker`, `dfam` (optional), `extlib` (optional)
 
  - Masked genome file (TODO: compress it)
  - BED file representing the masked regions.
-
-### `windowmasker`
-
- - Masked genome file (TODO: compress it)
- - BED file representing the masked regions.
- - ustat output file (TODO: remove it)
+ - Summary statistics of the softmasked genome.
 
 ## Credits
 
