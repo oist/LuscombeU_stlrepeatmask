@@ -28,7 +28,7 @@ include { REPEATMODELER_MASKER as EXTLIB_REPEATMASKER        } from '../modules/
 include { GFASTATS             as EXTLIB_STATS               } from '../modules/nf-core/gfastats/main'
 include { SEQTK_CUTN           as EXTLIB_BED                 } from '../modules/local/seqtk.nf'
 
-include { BEDTOOLS_CUSTOM      as MERGEDMASKS                } from '../modules/local/bedtools.nf'
+include { MERGE_MASKS          as MERGEDMASKS                } from '../modules/local/mergemasks.nf'
 include { SOFTMASK_STATS                                     } from '../modules/local/multiqc_softmask_statistics.nf'
 
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'

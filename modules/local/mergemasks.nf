@@ -1,4 +1,4 @@
-process BEDTOOLS_CUSTOM {
+process MERGE_MASKS {
     tag "$meta.id"
     label 'process_single'
 
@@ -38,7 +38,7 @@ process BEDTOOLS_CUSTOM {
         -fi $genome \\
         -bed ${prefix}_allmaskers.bed.gz \\
         -fo /dev/stdout |
-        gzip --best > ${prefix}_allmaskers.fasta.gz
+        gzip --best --no-name > ${prefix}_allmaskers.fasta.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
