@@ -28,7 +28,7 @@ process SOFTMASK_STATS {
     echo "#    id: 'repeat summary'" >> masking_stats_mqc.tsv
     echo "#    title: 'repeat summary'" >> masking_stats_mqc.tsv
     echo "#    ylab: ''" >> masking_stats_mqc.tsv
-    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases (REPM)\trmodeler masked bases (DFAM)\trmodeler masked bases (EXTR)" >> masking_stats_mqc.tsv
+    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases (REPM)\trmodeler masked bases (DFAM)\trmodeler masked bases (EXTR)\tAll maskers combined" >> masking_stats_mqc.tsv
     # Here we loop on samples
     for file in *_tantan.assembly_summary
     do
@@ -47,6 +47,7 @@ process SOFTMASK_STATS {
                 printf '\tNA' >> masking_stats_mqc.tsv
             fi
         done
+        grep 'soft-masked bases' \${SAMPLE}_allmaskers.assembly_summary | awk '{printf "\t"\$4}' >> masking_stats_mqc.tsv
         printf '\n' >> masking_stats_mqc.tsv
     done
     """

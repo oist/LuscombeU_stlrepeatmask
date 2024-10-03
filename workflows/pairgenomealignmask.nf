@@ -29,6 +29,7 @@ include { GFASTATS             as EXTLIB_STATS               } from '../modules/
 include { SEQTK_CUTN           as EXTLIB_BED                 } from '../modules/local/seqtk.nf'
 
 include { MERGE_MASKS          as MERGEDMASKS                } from '../modules/local/mergemasks.nf'
+include { GFASTATS             as MERGEDMASKS_STATS          } from '../modules/nf-core/gfastats/main'
 include { SOFTMASK_STATS                                     } from '../modules/local/multiqc_softmask_statistics.nf'
 
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
@@ -115,10 +116,11 @@ workflow PAIRGENOMEALIGNMASK {
     //
     MERGEDMASKS (
         input_genomes
-            .join(TANTAN_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] } )
-            .join(WINDOWMASKER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] })
-            .join(REPEATMODELER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] })
+            .join(TANTAN_BED.out.bed_gz.map       {meta, bed -> [ [id:meta.key ] , bed ] } )
+            .join(WINDOWMASKER_BED.out.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] } )
+            .join(REPEATMODELER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] } )
     )
+    MERGEDMASKS_STATS ( MERGEDMASKS.out.fasta )
 
     // Aggregation of statistics
     //
@@ -128,6 +130,7 @@ workflow PAIRGENOMEALIGNMASK {
         .mix( REPEATMODELER_STATS.out.assembly_summary.map {it[1]} )
         .mix(          DFAM_STATS_maybeout            .map {it[1]} )
         .mix(        EXTLIB_STATS_maybeout            .map {it[1]} )
+        .mix(   MERGEDMASKS_STATS.out.assembly_summary.map {it[1]} )
         .collect()
     )
     ch_multiqc_files = ch_multiqc_files.mix(SOFTMASK_STATS.out.tsv)
