@@ -30,7 +30,8 @@ include { SEQTK_CUTN           as EXTLIB_BED                 } from '../modules/
 
 include { MERGE_MASKS          as MERGEDMASKS                } from '../modules/local/mergemasks.nf'
 include { GFASTATS             as MERGEDMASKS_STATS          } from '../modules/nf-core/gfastats/main'
-include { SOFTMASK_STATS                                     } from '../modules/local/multiqc_softmask_statistics.nf'
+include { MULTIQC_SOFTMASK_STATS                             } from '../modules/local/multiqc_softmask_statistics.nf'
+include { MULTIQC_SOFTMASK_OVERLAPS                          } from '../modules/local/multiqc_softmask_overlaps.nf'
 
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap            } from 'plugin/nf-validation'
@@ -124,7 +125,7 @@ workflow PAIRGENOMEALIGNMASK {
 
     // Aggregation of statistics
     //
-    SOFTMASK_STATS ( channel.empty()
+    MULTIQC_SOFTMASK_STATS ( channel.empty()
         .mix(        TANTAN_STATS.out.assembly_summary.map {it[1]} )
         .mix(  WINDOWMASKER_STATS.out.assembly_summary.map {it[1]} )
         .mix( REPEATMODELER_STATS.out.assembly_summary.map {it[1]} )
@@ -133,7 +134,12 @@ workflow PAIRGENOMEALIGNMASK {
         .mix(   MERGEDMASKS_STATS.out.assembly_summary.map {it[1]} )
         .collect()
     )
-    ch_multiqc_files = ch_multiqc_files.mix(SOFTMASK_STATS.out.tsv)
+    ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_SOFTMASK_STATS.out.tsv)
+
+    // Aggregation of statistics (Jaccard indices)
+    //
+    MULTIQC_SOFTMASK_OVERLAPS ( MERGEDMASKS.out.txt.map{it[1]}.collect() )
+    ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_SOFTMASK_OVERLAPS.out.tsv)
 
 
     // Collect software versions

@@ -1,4 +1,4 @@
-process SOFTMASK_STATS {
+process MULTIQC_SOFTMASK_STATS {
     label 'process_single'
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -19,8 +19,8 @@ process SOFTMASK_STATS {
     def args = task.ext.args ?: ''
     """
     # Here we make the header
-    echo "# id: 'repeat summary'" > masking_stats_mqc.tsv
-    echo "# section_name: 'repeat masking summary statistics'" >> masking_stats_mqc.tsv
+    echo "# id: 'Repeat summary'" > masking_stats_mqc.tsv
+    echo "# section_name: 'Repeat masking summary statistics'" >> masking_stats_mqc.tsv
     echo "# format: 'tsv'" >> masking_stats_mqc.tsv
     echo "# plot_type: 'table'" >> masking_stats_mqc.tsv
     echo "# description: 'This plot shows a brief summary of each genomes whose repeats has been masked'" >> masking_stats_mqc.tsv
