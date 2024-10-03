@@ -96,4 +96,5 @@ On a test run on haplotype-merged and diploid assemblies of _Oikopleura dioica_ 
 
 ## Credits
 
-nf-core/pairgenomealignmask was originally written by [Mahdi](https://github.com/U13bs1125).
+This pipeline was originally written by [Mahdi](https://github.com/U13bs1125) and then
+taken over by @charles-plessy.
