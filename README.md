@@ -8,7 +8,7 @@ to <https://github.com/nf-core/pairgenomealign>.
 
 This pipeline takes genomes as inputs and soft-masks their repeats with the following software:
 
- - tantan
+ - tantan (our default choice from a long time because TRF used to be non-free).
  - windowmasker
  - repeatmasker
 
@@ -93,6 +93,10 @@ On a test run on haplotype-merged and diploid assemblies of _Oikopleura dioica_ 
  - CPU usage was ~50 % for most processes.  RepeatModeller was allocated 24 cores and used ~10 on average.
  - Memory usage was less than 1 GB for all processes except RepeatModeller (~6 GB, max 8 GB).
  - All processes needed only 10 % of the allocated time, except for RepeatModeller, which took between 100 and 500 minutes.
+
+## Future directions
+
+ - It may be interesting to add TRF and ULTRA, and compare and combine their results to the ones of tantan.
 
 ## Credits
 
