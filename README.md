@@ -86,6 +86,14 @@ nextflow run ./main.nf \
  - BED file representing the masked regions.
  - Summary statistics of the softmasked genome.
 
+## Resource usage
+
+On a test run on haplotype-merged and diploid assemblies of _Oikopleura dioica_ (2n = 60 Mbp):
+
+ - CPU usage was ~50 % for most processes.  RepeatModeller was allocated 24 cores and used ~10 on average.
+ - Memory usage was less than 1 GB for all processes except RepeatModeller (~6 GB, max 8 GB).
+ - All processes needed only 10 % of the allocated time, except for RepeatModeller, which took between 100 and 500 minutes.
+
 ## Credits
 
 nf-core/pairgenomealignmask was originally written by [Mahdi](https://github.com/U13bs1125).
