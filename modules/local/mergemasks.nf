@@ -26,7 +26,7 @@ process MERGE_MASKS {
     bedtools jaccard -nonamecheck -a $tantan       -b $windowmasker         > ${prefix}_tantan_windowmasker_jaccard.txt
     bedtools jaccard -nonamecheck -a $tantan       -b $repeatmasker         > ${prefix}_tantan_repeatmasker_jaccard.txt
     bedtools jaccard -nonamecheck -a $repeatmasker -b $windowmasker         > ${prefix}_repeatmasker_windowmasker_jaccard.txt
-    
+
     zcat $tantan $windowmasker               | sort -k1,1 -k2,2n | bedtools merge | gzip --best  > ${prefix}_tantan_windowmasker.bed.gz
     zcat $tantan $repeatmasker               | sort -k1,1 -k2,2n | bedtools merge | gzip --best  > ${prefix}_tantan_repeatmasker.bed.gz
     zcat $windowmasker $repeatmasker         | sort -k1,1 -k2,2n | bedtools merge | gzip --best  > ${prefix}_windowmasker_repeatmasker.bed.gz
