@@ -98,6 +98,8 @@ workflow PAIRGENOMEALIGNMASK {
         DFAM_STATS_maybeout = DFAM_STATS.out.assembly_summary
     }
 
+    // Repeat detection with RepeatMasker and an external library of repeats
+    //
     EXTLIB_STATS_maybeout = channel.empty()
     if (params.repeatlib) {
         EXTLIB_REPEATMASKER (
@@ -109,8 +111,7 @@ workflow PAIRGENOMEALIGNMASK {
         EXTLIB_STATS_maybeout = EXTLIB_STATS.out.assembly_summary
     }
 
-    //
-    // MODULE: CUSTOMMODULE
+    // Aggregation of statistics
     //
     CUSTOMMODULE ( channel.empty()
         .mix(        TANTAN_STATS.out.assembly_summary.map {it[1]} )
@@ -131,6 +132,8 @@ workflow PAIRGENOMEALIGNMASK {
             .join(REPEATMODELER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] })
     )
 
+    // Collect software versions
+    //
     ch_versions = ch_versions
         .mix(WINDOWMASKER_MASK.out.versions.first())
         .mix(TANTAN_MASK.out.versions.first())
@@ -139,9 +142,6 @@ workflow PAIRGENOMEALIGNMASK {
         .mix(TANTAN_BED.out.versions.first())
         .mix(MERGEDMASKS.out.versions.first())
 
-    //
-    // Collate and save software versions
-    //
     softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
@@ -150,8 +150,7 @@ workflow PAIRGENOMEALIGNMASK {
             newLine: true
         ).set { ch_collated_versions }
 
-    //
-    // MODULE: MultiQC
+    // MultiQC
     //
     ch_multiqc_config        = Channel.fromPath(
         "$projectDir/assets/multiqc_config.yml", checkIfExists: true)
