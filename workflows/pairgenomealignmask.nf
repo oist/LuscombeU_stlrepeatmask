@@ -29,7 +29,7 @@ include { GFASTATS             as EXTLIB_STATS               } from '../modules/
 include { SEQTK_CUTN           as EXTLIB_BED                 } from '../modules/local/seqtk.nf'
 
 include { BEDTOOLS_CUSTOM      as MERGEDMASKS                } from '../modules/local/bedtools.nf'
-include { CUSTOMMODULE                } from '../modules/local/custommodule.nf'
+include { SOFTMASK_STATS                                     } from '../modules/local/multiqc_softmask_statistics.nf'
 
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap            } from 'plugin/nf-validation'
@@ -111,9 +111,18 @@ workflow PAIRGENOMEALIGNMASK {
         EXTLIB_STATS_maybeout = EXTLIB_STATS.out.assembly_summary
     }
 
+    // Comparing and merging soft masks from each software.
+    //
+    MERGEDMASKS (
+        input_genomes
+            .join(TANTAN_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] } )
+            .join(WINDOWMASKER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] })
+            .join(REPEATMODELER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] })
+    )
+
     // Aggregation of statistics
     //
-    CUSTOMMODULE ( channel.empty()
+    SOFTMASK_STATS ( channel.empty()
         .mix(        TANTAN_STATS.out.assembly_summary.map {it[1]} )
         .mix(  WINDOWMASKER_STATS.out.assembly_summary.map {it[1]} )
         .mix( REPEATMODELER_STATS.out.assembly_summary.map {it[1]} )
@@ -121,16 +130,8 @@ workflow PAIRGENOMEALIGNMASK {
         .mix(        EXTLIB_STATS_maybeout            .map {it[1]} )
         .collect()
     )
-    ch_multiqc_files = ch_multiqc_files.mix(CUSTOMMODULE.out.tsv)
+    ch_multiqc_files = ch_multiqc_files.mix(SOFTMASK_STATS.out.tsv)
 
-    // Comparing and merging soft masks from each software.
-    // 
-    MERGEDMASKS (
-        input_genomes
-            .join(TANTAN_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] } )
-            .join(WINDOWMASKER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] })
-            .join(REPEATMODELER_BED.out.bed_gz.map{meta, bed -> [ [id:meta.key ] , bed ] })
-    )
 
     // Collect software versions
     //
