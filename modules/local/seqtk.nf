@@ -23,7 +23,7 @@ process SEQTK_CUTN {
 
     """
     # Produces a compressed BED-3 file with the coordinates of soft-masked regions.
-    awk '/^>/ {print; next} {gsub(/[acgt]/, "N"); print}' $fasta |
+    zcat -f $fasta | awk '/^>/ {print; next} {gsub(/[acgt]/, "N"); print}' |
         seqtk cutN -gn 1 - |
         sort -k1,1 -k2,2n | gzip --best > ${prefix}.mask.bed.gz
 
