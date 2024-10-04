@@ -28,7 +28,7 @@ process MULTIQC_SOFTMASK_STATS {
     echo "#    id: 'repeat summary'" >> masking_stats_mqc.tsv
     echo "#    title: 'repeat summary'" >> masking_stats_mqc.tsv
     echo "#    ylab: ''" >> masking_stats_mqc.tsv
-    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases (REPM)\trmodeler masked bases (DFAM)\trmodeler masked bases (EXTR)\tAll maskers combined" >> masking_stats_mqc.tsv
+    echo "id\tTotal scaffold length\tTotal contig length\ttantan masked bases\twindowmasker masked bases\trmodeler masked bases (REPM)\trmodeler masked bases (DFAM)\trmodeler masked bases (EXTR)\trmodeler masked bases (all)\tAll maskers combined" >> masking_stats_mqc.tsv
     # Here we loop on samples
     for file in *_tantan.assembly_summary
     do
@@ -38,7 +38,7 @@ process MULTIQC_SOFTMASK_STATS {
         grep 'Total contig length'   \$file | tail -n 1 | awk '{printf \$4"\t"}' >> masking_stats_mqc.tsv
         grep 'soft-masked bases'     \$file | tail -n 1 | awk '{printf \$4"\t"}' >> masking_stats_mqc.tsv
         grep 'soft-masked bases' \${SAMPLE}_windowmasker.assembly_summary | awk '{printf \$4}' >> masking_stats_mqc.tsv
-        for REPM_RUN in REPM DFAM EXTR
+        for REPM_RUN in REPM DFAM EXTR repeatmasker_all
         do
             REPM_SUMMARY=\${SAMPLE}_\${REPM_RUN}.assembly_summary
             if [ -e \$REPM_SUMMARY ] ; then
