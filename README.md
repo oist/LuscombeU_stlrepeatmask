@@ -14,10 +14,14 @@ This pipeline takes genomes as inputs and soft-masks their repeats with the foll
 The input of repeatmasker can be any of:
 
 - repeatmodeller (default)
-- DFAM
-- a custom repeat library.
+- DFAM (optional)
+- a custom repeat library (optional)
 
 Repeatmasker and repeatmodeller are run from the same image as the standard _nf-core_ module. But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container)
+
+The pipeline then merges the soft masks of the RepeatMasker runs, and then merges that with the tantan and WindowMasker runs.
+
+Finally, the pipeline prepares a MultiQC report that shows the extent of masking for each tool.
 
 ## Disclaimer
 
@@ -93,6 +97,7 @@ On a test run on haplotype-merged and diploid assemblies of _Oikopleura dioica_ 
 - CPU usage was ~50 % for most processes. RepeatModeller was allocated 24 cores and used ~10 on average.
 - Memory usage was less than 1 GB for all processes except RepeatModeller (~6 GB, max 8 GB).
 - All processes needed only 10 % of the allocated time, except for RepeatModeller, which took between 100 and 500 minutes.
+- On a couple of primate genomes, RepeatModeller managed to keep its 24 cores 60% busy for ~30 hours using 40 GB memory.
 
 ## Future directions
 
