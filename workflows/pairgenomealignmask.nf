@@ -28,7 +28,9 @@ include { REPEATMODELER_MASKER as EXTLIB_REPEATMASKER        } from '../modules/
 include { GFASTATS             as EXTLIB_STATS               } from '../modules/nf-core/gfastats/main'
 include { SEQTK_CUTN           as EXTLIB_BED                 } from '../modules/local/seqtk.nf'
 
-include { MERGE_REPM_RESULTS   as MERGEDMASKS_REPM           } from '../modules/local/merge_repeatmasker_results.nf'
+include { MERGE_REPM_RESULTS   as MERGEDMASKS_REPM_ALL       } from '../modules/local/merge_repeatmasker_all.nf'
+include { MERGE_REPM_RESULTS   as MERGEDMASKS_REPM_DFAM      } from '../modules/local/merge_repeatmasker_dfam.nf'
+include { MERGE_REPM_RESULTS   as MERGEDMASKS_REPM_EXTLIB    } from '../modules/local/merge_repeatmasker_extlib.nf'
 include { GFASTATS             as MERGEDMASKS_REPM_STATS     } from '../modules/nf-core/gfastats/main'
 
 include { MERGE_MASKS          as MERGEDMASKS_ALL            } from '../modules/local/mergemasks.nf'
@@ -90,10 +92,10 @@ workflow PAIRGENOMEALIGNMASK {
     )
     REPEATMODELER_STATS         ( REPEATMODELER_REPEATMASKER.out.fasta )
     REPEATMODELER_BED           ( REPEATMODELER_REPEATMASKER.out.fasta )
+    REPEATMODELER_BED_metafixed = REPEATMODELER_BED.out.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] }
 
     // Repeat detection with DFAM and RepeatMasker
     //
-    DFAM_BED_maybeout  = channel.empty()
     DFAM_STATS_maybeout = channel.empty()
     if (params.taxon) {
         DFAM_REPEATMASKER (
@@ -102,13 +104,12 @@ workflow PAIRGENOMEALIGNMASK {
         )
         DFAM_STATS ( DFAM_REPEATMASKER.out.fasta )
         DFAM_BED   ( DFAM_REPEATMASKER.out.fasta )
-        DFAM_BED_maybeout   = DFAM_BED.out.bed_gz
+        DFAM_BED_metafixed  = DFAM_BED.out.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] }
         DFAM_STATS_maybeout = DFAM_STATS.out.assembly_summary
     }
 
     // Repeat detection with RepeatMasker and an external library of repeats
     //
-    EXTLIB_BED_maybeout  = channel.empty()
     EXTLIB_STATS_maybeout = channel.empty()
     if (params.repeatlib) {
         EXTLIB_REPEATMASKER (
@@ -117,19 +118,33 @@ workflow PAIRGENOMEALIGNMASK {
         )
         EXTLIB_STATS ( EXTLIB_REPEATMASKER.out.fasta )
         EXTLIB_BED   ( EXTLIB_REPEATMASKER.out.fasta )
-        EXTLIB_BED_maybeout   = EXTLIB_BED.out.bed_gz
+        EXTLIB_BED_metafixed  = EXTLIB_BED.out.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] }
         EXTLIB_STATS_maybeout = EXTLIB_STATS.out.assembly_summary
     }
 
     // Comparing and merging soft masks from each repeatmasker run
     //
-    MERGEDMASKS_REPM (
-        input_genomes
-            .join(REPEATMODELER_BED.out.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] } )
-            .join(    DFAM_BED_maybeout.map {meta, bed -> [ [id:meta.key ] , bed ] } , remainder: true)
-            .join(  EXTLIB_BED_maybeout.map {meta, bed -> [ [id:meta.key ] , bed ] } , remainder: true)
-    )
-    MERGEDMASKS_REPM_STATS ( MERGEDMASKS_REPM.out.fasta )
+    if (params.taxon) { 
+        if (params.repeatlib) {
+            MERGEDMASKS_REPM_ALL   (input_genomes.join(REPEATMODELER_BED_metafixed).join(DFAM_BED_metafixed).join(EXTLIB_BED_metafixed))
+            MERGEDMASKS_REPM_STATS ( MERGEDMASKS_REPM_ALL.out.fasta )
+            MERGEDMASKS_REPM_STATS_maybeout = MERGEDMASKS_REPM_STATS.out.assembly_summary
+            MERGEDMASKS_REPM_BED   = MERGEDMASKS_REPM_ALL.out.repm_all_bed_gz
+        } else {
+            MERGEDMASKS_REPM_DFAM  (input_genomes.join(REPEATMODELER_BED_metafixed).join(DFAM_BED_metafixed))
+            MERGEDMASKS_REPM_STATS ( MERGEDMASKS_REPM_DFAM.out.fasta )
+            MERGEDMASKS_REPM_STATS_maybeout = MERGEDMASKS_REPM_STATS.out.assembly_summary
+            MERGEDMASKS_REPM_BED   = MERGEDMASKS_REPM_DFAM.out.repm_all_bed_gz
+        }
+    } else if (params.repeatlib) {
+            MERGEDMASKS_REPM_EXTLIB(input_genomes.join(REPEATMODELER_BED_metafixed).join(EXTLIB_BED_metafixed))
+            MERGEDMASKS_REPM_STATS ( MERGEDMASKS_REPM_EXTLIB.out.fasta )
+            MERGEDMASKS_REPM_STATS_maybeout = MERGEDMASKS_REPM_STATS.out.assembly_summary
+            MERGEDMASKS_REPM_BED   = MERGEDMASKS_REPM_EXTLIB.out.repm_all_bed_gz
+    } else {
+            MERGEDMASKS_REPM_STATS_maybeout = channel.empty()
+            MERGEDMASKS_REPM_BED   = REPEATMODELER_BED_metafixed
+    }
 
     // Comparing and merging soft masks from each software.
     //
@@ -137,7 +152,7 @@ workflow PAIRGENOMEALIGNMASK {
         input_genomes
             .join(TANTAN_BED.out.bed_gz.map       {meta, bed -> [ [id:meta.key ] , bed ] } )
             .join(WINDOWMASKER_BED.out.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] } )
-            .join(MERGEDMASKS_REPM.out.repm_all_bed_gz                                     )
+            .join(MERGEDMASKS_REPM_BED                                                     )
     )
     MERGEDMASKS_ALL_STATS ( MERGEDMASKS_ALL.out.fasta )
 
@@ -149,7 +164,7 @@ workflow PAIRGENOMEALIGNMASK {
         .mix(   REPEATMODELER_STATS.out.assembly_summary.map {it[1]} )
         .mix(            DFAM_STATS_maybeout            .map {it[1]} )
         .mix(          EXTLIB_STATS_maybeout            .map {it[1]} )
-        .mix( MERGEDMASKS_REPM_STATS.out.assembly_summary.map{it[1]} )
+        .mix(MERGEDMASKS_REPM_STATS_maybeout            .map {it[1]} )
         .mix(  MERGEDMASKS_ALL_STATS.out.assembly_summary.map{it[1]} )
         .collect()
     )
