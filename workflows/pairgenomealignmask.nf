@@ -108,7 +108,7 @@ workflow PAIRGENOMEALIGNMASK {
 
     // Repeat detection with RepeatMasker and an external library of repeats
     //
-    EXTLIB_REPM_maybeout  = channel.empty()
+    EXTLIB_BED_maybeout  = channel.empty()
     EXTLIB_STATS_maybeout = channel.empty()
     if (params.repeatlib) {
         EXTLIB_REPEATMASKER (
