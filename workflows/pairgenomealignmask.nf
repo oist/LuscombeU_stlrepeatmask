@@ -102,7 +102,7 @@ workflow PAIRGENOMEALIGNMASK {
         )
         DFAM_STATS ( DFAM_REPEATMASKER.out.fasta )
         DFAM_BED   ( DFAM_REPEATMASKER.out.fasta )
-        DFAM_BED_maybeout   = DFAM_BED.out
+        DFAM_BED_maybeout   = DFAM_BED.out.bed_gz
         DFAM_STATS_maybeout = DFAM_STATS.out.assembly_summary
     }
 
@@ -117,7 +117,7 @@ workflow PAIRGENOMEALIGNMASK {
         )
         EXTLIB_STATS ( EXTLIB_REPEATMASKER.out.fasta )
         EXTLIB_BED   ( EXTLIB_REPEATMASKER.out.fasta )
-        EXTLIB_BED_maybeout   = EXTLIB_BED.out
+        EXTLIB_BED_maybeout   = EXTLIB_BED.out.bed_gz
         EXTLIB_STATS_maybeout = EXTLIB_STATS.out.assembly_summary
     }
 
@@ -126,8 +126,8 @@ workflow PAIRGENOMEALIGNMASK {
     MERGEDMASKS_REPM (
         input_genomes
             .join(REPEATMODELER_BED.out.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] } )
-            .join(    DFAM_BED_maybeout.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] } )
-            .join(  EXTLIB_BED_maybeout.bed_gz.map {meta, bed -> [ [id:meta.key ] , bed ] } )
+            .join(    DFAM_BED_maybeout.map {meta, bed -> [ [id:meta.key ] , bed ] } , remainder: true)
+            .join(  EXTLIB_BED_maybeout.map {meta, bed -> [ [id:meta.key ] , bed ] } , remainder: true)
     )
     MERGEDMASKS_REPM_STATS ( MERGEDMASKS_REPM.out.fasta )
 
