@@ -51,7 +51,7 @@ Note that mixing compressed and uncompressed input is not supported.
 Then run the pipeline as usual:
 
 ```bash
-nextflow run oist/LuscombeU_pairgenomealign-preprocess \
+nextflow run oist/LuscombeU_stlrepeatmask \
    -profile oist \
    --input samplesheet.csv \
    --outdir <OUTDIR>
@@ -60,7 +60,7 @@ nextflow run oist/LuscombeU_pairgenomealign-preprocess \
 Test the dev branch of the pipeline (adapt the `-w` option for your own case!
 
 ```bash
-nextflow run oist/LuscombeU_pairgenomealign-preprocess -r dev \
+nextflow run oist/LuscombeU_stlrepeatmask \
    -profile oist,test \
    -w /flash/LuscombeU/`whoami`/cache/deletemeTest \
    --outdir results_test
