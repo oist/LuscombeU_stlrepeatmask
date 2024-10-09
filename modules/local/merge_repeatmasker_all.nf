@@ -24,8 +24,9 @@ process MERGE_REPM_RESULTS {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
+    awk '/^>/ {if (seqlen){print seqname "\t" seqlen}; split(\$1, a, ">"); seqname=a[2]; seqlen=0; next} {seqlen += length(\$0)} END {print seqname "\t" seqlen}' $genome > genome.genome # thanks, ChatGPT!
     run_bedtools_operations() {
-        bedtools jaccard -nonamecheck -a "\$1" -b "\$2"                               > "${prefix}_\${3}_jaccard.txt"
+        bedtools jaccard -nonamecheck -a "\$1" -b "\$2" -g genome.genome              > "${prefix}_\${3}_jaccard.txt"
         zcat "\$1" "\$2" | sort -k1,1 -k2,2n | bedtools merge | gzip --best --no-name > "${prefix}_\${3}.mask.bed.gz"
     }
 
