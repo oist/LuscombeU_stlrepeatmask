@@ -37,7 +37,6 @@ include { MERGE_MASKS          as MERGEDMASKS_ALL            } from '../modules/
 include { GFASTATS             as MERGEDMASKS_ALL_STATS      } from '../modules/nf-core/gfastats/main'
 
 include { MULTIQC_SOFTMASK_STATS                             } from '../modules/local/multiqc_softmask_statistics.nf'
-include { MULTIQC_SOFTMASK_OVERLAPS                          } from '../modules/local/multiqc_softmask_overlaps.nf'
 
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap            } from 'plugin/nf-validation'
@@ -169,12 +168,6 @@ workflow PAIRGENOMEALIGNMASK {
         .collect()
     )
     ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_SOFTMASK_STATS.out.tsv)
-
-    // Aggregation of statistics (Jaccard indices)
-    //
-    MULTIQC_SOFTMASK_OVERLAPS ( MERGEDMASKS_ALL.out.txt.map{it[1]}.collect() )
-    ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_SOFTMASK_OVERLAPS.out.tsv)
-
 
     // Collect software versions
     //
