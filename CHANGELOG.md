@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v2.0.0~beta1 - "tbd" [tbd]
 
  - Update RepeatModeler from `2.0.5` to `2.0.7`.
- - Update tantan from `49` to `51`.
+ - Update tantan from `49` to `51` (no changes expected).
+ - Update BLAST package from which WindowMasker `1.0.0` is provided from `2.15.0` to `2.17.0` (no change expected).
 
 ## v1.0.0 - "Fun guy" [October 10th, 2024]
 
