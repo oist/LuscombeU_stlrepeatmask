@@ -13,7 +13,7 @@ This pipeline takes genomes as inputs and soft-masks their repeats with the foll
 
 The input of repeatmasker can be any of:
 
-- [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) version 2.0.5 (default)
+- [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) version 2.0.7 (default)
 - [Dfam](https://www.dfam.org/home) (optional)
 - A custom repeat library (optional)
 

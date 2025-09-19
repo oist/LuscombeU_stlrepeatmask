@@ -3,10 +3,10 @@ process REPEATMODELER_BUILDDATABASE {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
-    def singularity_image = params.singularity_image ?: 'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0'
+    def singularity_image = params.singularity_image ?: 'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.7--pl5321hdfd78af_0'
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         singularity_image :
-        'biocontainers/repeatmodeler:2.0.5--pl5321hdfd78af_0' }"
+        'biocontainers/repeatmodeler:2.0.7--pl5321hdfd78af_0' }"
 
     input:
     tuple val(meta), path(fasta)
