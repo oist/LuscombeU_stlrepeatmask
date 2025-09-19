@@ -17,7 +17,7 @@ The input of repeatmasker can be any of:
 - [Dfam](https://www.dfam.org/home) (optional)
 - A custom repeat library (optional)
 
-RepeatMasker and RepeatModeler are run from the same image as the standard _nf-core_ module. But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container).
+RepeatMasker and RepeatModeler are run from the same bioconda package as the standard _nf-core_ module.
 
 The pipeline then merges the soft masks of the RepeatMasker runs, and then merges that with the tantan and WindowMasker runs.
 
@@ -82,7 +82,6 @@ nextflow run ./main.nf \
 
 - Point `--repeatlib` to a FASTA file to have an extra RepeatMasker run using it as a library.
 - Set `--taxon` to a taxon name to have an extra RepeatMasker run using the `-species` option set to that taxon.
-- Point `--singularity_image` to a local file path like `/flash/LuscombeU/singularity.cacheDir/tetools_1.88.5.sif` or an URL to singularity image to replace the default one.
 - Set the `--gzipped_input=false` parameter when the input is not compressed..
 
 ### Dfam

@@ -60,11 +60,6 @@
                     "type": "string",
                     "fa_icon": "fas fa-paw"
                 },
-                "singularity_image": {
-                    "description": "Patch to a singularity image containing RepeatMasker and a DFAM library",
-                    "type": "string",
-                    "fa_icon": "fas fa-compact-disc"
-                },
                 "repeatlib": {
                     "description": "Patch to a repeat library to be used by RepeatMasker",
                     "type": "string",
