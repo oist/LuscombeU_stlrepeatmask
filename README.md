@@ -1,7 +1,8 @@
-# Genome pre-processing pipeline
+# Genome repeat masking pipeline
 
-This is a local pipeline to pre-process downloaded genomes before feeding them
-to <https://github.com/nf-core/pairgenomealign>.
+This is a local pipeline to repeat-mask genomes before feeding them to
+<https://github.com/nf-core/pairgenomealign>.  The rationale is that it is
+better when all soft masks have been produced by the same pipeline…
 
 ## What it does:
 
