@@ -7,13 +7,13 @@ to <https://github.com/nf-core/pairgenomealign>.
 
 This pipeline takes genomes as inputs and soft-masks their repeats with the following software:
 
-- [tantan](https://gitlab.com/mcfrith/tantan), our default choice from a long time because TRF used to be non-free.
-- [WindowMasker](https://doi.org/10.1093/bioinformatics/bti774), distributed with [BLAST](https://www.ncbi.nlm.nih.gov/books/NBK569845/#ckbk_Createmaskedb.Create_masking_inform_1).
-- [RepeatMasker](https://www.repeatmasker.org/).
+- [tantan](https://gitlab.com/mcfrith/tantan), version 49.  Tantan is our default choice from a long time because TRF used to be non-free.
+- [WindowMasker](https://doi.org/10.1093/bioinformatics/bti774), version 1.0.0 distributed with [BLAST](https://www.ncbi.nlm.nih.gov/books/NBK569845/#ckbk_Createmaskedb.Create_masking_inform_1) 2.15.0.
+- [RepeatMasker](https://www.repeatmasker.org/) version 4.1.5.
 
 The input of repeatmasker can be any of:
 
-- [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) (default)
+- [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) version 2.0.5 (default)
 - [Dfam](https://www.dfam.org/home) (optional)
 - A custom repeat library (optional)
 
