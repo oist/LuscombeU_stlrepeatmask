@@ -7,17 +7,17 @@ to <https://github.com/nf-core/pairgenomealign>.
 
 This pipeline takes genomes as inputs and soft-masks their repeats with the following software:
 
-- tantan (our default choice from a long time because TRF used to be non-free).
-- windowmasker
-- repeatmasker
+- [tantan](https://gitlab.com/mcfrith/tantan), our default choice from a long time because TRF used to be non-free.
+- [WindowMasker](https://doi.org/10.1093/bioinformatics/bti774), distributed with [BLAST](https://www.ncbi.nlm.nih.gov/books/NBK569845/#ckbk_Createmaskedb.Create_masking_inform_1).
+- [RepeatMasker](https://www.repeatmasker.org/).
 
 The input of repeatmasker can be any of:
 
-- repeatmodeller (default)
-- DFAM (optional)
-- a custom repeat library (optional)
+- [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) (default)
+- [Dfam](https://www.dfam.org/home) (optional)
+- A custom repeat library (optional)
 
-Repeatmasker and repeatmodeller are run from the same image as the standard _nf-core_ module. But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container)
+RepeatMasker and RepeatModeler are run from the same image as the standard _nf-core_ module. But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container)
 
 The pipeline then merges the soft masks of the RepeatMasker runs, and then merges that with the tantan and WindowMasker runs.
 
