@@ -83,6 +83,14 @@ nextflow run ./main.nf \
 - Point `--singularity_image` to a local file path like `/flash/LuscombeU/singularity.cacheDir/tetools_1.88.5.sif` or an URL to singularity image to replace the default one.
 - Set the `--gzipped_input=false` parameter when the input is not compressed..
 
+### Dfam
+
+Most containers that provide RepeatMasker do not contain a full copy of Dfam,
+which is huge.  However they sometimes have a stub, for instance under
+`/usr/local/share/RepeatMasker/Libraries` or `/opt/RepeatMasker/Libraries`.
+Interstingly, when using the `--libdir` option, Dfam has to be in a subfolder
+named `famdb`, although it is named `FamDB` in the download website.
+
 ## Pipeline output
 
 ### `tantan`, `repeatmodeler`, `windowmasker`, `dfam` (optional), `extlib` (optional), `mergedmasks`
