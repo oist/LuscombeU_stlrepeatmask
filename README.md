@@ -48,9 +48,8 @@ query_1,path-to-query-genome-file-one.fasta.gz
 query_2,path-to-query-genome-file-two.fasta.gz
 ```
 
-If the input is not compressed then pass the `--gzipped_input=false` parameter.
-Note that mixing compressed and uncompressed input is not supported, partly
-because [WindowMasker does not handle `stdin` input](https://github.com/ncbi/ncbi-cxx-toolkit-public/issues/21).
+Genome files are uncompressed because [WindowMasker does not handle `stdin`
+input](https://github.com/ncbi/ncbi-cxx-toolkit-public/issues/21).
 
 Then run the pipeline as usual:
 
@@ -83,7 +82,6 @@ nextflow run ./main.nf \
 
 - Point `--repeatlib` to a FASTA file to have an extra RepeatMasker run using it as a library.
 - Set `--taxon` to a taxon name to have an extra RepeatMasker run using the `-species` option set to that taxon.
-- Set the `--gzipped_input=false` parameter when the input is not compressed..
 - Point `--dfam` to a directory containing a `famdb` subdirectory with the FamDB files in HDF5 format (not gzipped).
 
 ### Dfam

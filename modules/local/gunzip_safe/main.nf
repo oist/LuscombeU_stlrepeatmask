@@ -1,11 +1,15 @@
-process GUNZIP {
+process GUNZIP_SAFE {
+
+    // Derived from nf-core gunzip module, but also accepts non-compressed input.
+    // Inspiration from SAMTOOLS_BGZIP.
+
     tag "$archive"
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/ubuntu:22.04' :
-        'nf-core/ubuntu:22.04' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/0d/0d740f724375ad694bf4dce496aa7a419ffc67e12329bfb513935aafca5b28e9/data' :
+        'community.wave.seqera.io/library/bedtools_blast_samtools_tantan:73b553483a4b3a4e' }"
 
     input:
     tuple val(meta), path(archive)
@@ -24,14 +28,25 @@ process GUNZIP {
     def prefix      = task.ext.prefix ?: name
     gunzip          = prefix + ".$extension"
     """
-    # Not calling gunzip itself because it creates files
-    # with the original group ownership rather than the
-    # default one for that user / the work directory
-    gzip \\
-        -cd \\
-        $args \\
-        $archive \\
-        > $gunzip
+    FILE_TYPE=\$(htsfile $archive)
+    case "\$FILE_TYPE" in
+        *BGZF-compressed*|*gzip-compressed*)
+            # Not calling gunzip itself because it creates files
+            # with the original group ownership rather than the
+            # default one for that user / the work directory
+            gzip \\
+                -cd \\
+                $args \\
+                $archive \\
+                > $gunzip
+        *bzip2-compressed*)
+            echo "bzip2 compression detected" ; exit 1 ;;
+        *XZ-compressed*)
+            echo "xz compression detected" ; exit 1 ;;
+        *)
+            # Do nothing or just rename if the file was already compressed
+            [ "\$(basename $archive)" != "\$(basename ${gunzip})" ] && ln -s $archive ${gunzip} ;;
+    esac
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

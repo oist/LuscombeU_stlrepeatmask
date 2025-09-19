@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { GUNZIP                                             } from '../modules/nf-core/gunzip/main'
+include { GUNZIP_SAFE          as GUNZIP                     } from '../modules/local/gunzip_safe/main'
 
 include { TANTAN               as TANTAN_MASK                } from '../modules/local/tantan.nf'
 include { GFASTATS             as TANTAN_STATS               } from '../modules/nf-core/gfastats/main'
@@ -60,12 +60,8 @@ workflow PAIRGENOMEALIGNMASK {
     ch_versions = Channel.empty()
     ch_multiqc_files = Channel.empty()
 
-    if (params.gzipped_input) {
-        GUNZIP(ch_samplesheet)
-        input_genomes = GUNZIP.out.gunzip
-    } else {
-        input_genomes = ch_samplesheet
-    }
+    GUNZIP(ch_samplesheet)
+    input_genomes = GUNZIP.out.gunzip
 
     // Simple tandem repeat masking with tantan
     //

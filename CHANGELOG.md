@@ -5,6 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v2.0.0~beta1 - "tbd" [tbd]
 
+ - Remove the `gzipped_input` option and handle input where some genomes are compressed and some are not.
  - Add a `--dfam` option to provide DFAM.
  - Remove the `--singularity_image` option.
  - Compress masked genomes with `bgzip` version `1.22.1` (allows for CRAM compression).
