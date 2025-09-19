@@ -17,7 +17,7 @@ The input of repeatmasker can be any of:
 - [Dfam](https://www.dfam.org/home) (optional)
 - A custom repeat library (optional)
 
-RepeatMasker and RepeatModeler are run from the same image as the standard _nf-core_ module. But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container)
+RepeatMasker and RepeatModeler are run from the same image as the standard _nf-core_ module. But it is possible to pass the URL to an alternative singularity image, for instance to use the latest [TE Tools container](https://github.com/Dfam-consortium/TETools?tab=readme-ov-file#dfam-te-tools-container).
 
 The pipeline then merges the soft masks of the RepeatMasker runs, and then merges that with the tantan and WindowMasker runs.
 
@@ -84,11 +84,15 @@ nextflow run ./main.nf \
 
 ## Pipeline output
 
-### `tantan`, `repeatmodeler`, `windowmasker`, `dfam` (optional), `extlib` (optional)
+### `tantan`, `repeatmodeler`, `windowmasker`, `dfam` (optional), `extlib` (optional), `mergedmasks`
 
 - Masked genome file (compressed).
 - BED file representing the masked regions.
 - Summary statistics of the softmasked genome.
+
+### Only in `repeatmodeler`
+
+- De novo detected repeats (`.fa`, `.log`, `.stk` and BLAST database files `.n*`)
 
 ## Resource usage
 
