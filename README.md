@@ -97,7 +97,7 @@ named `famdb`, although it is named `FamDB` in the download website.
 
 ### `tantan`, `repeatmodeler`, `windowmasker`, `dfam` (optional), `extlib` (optional), `mergedmasks`
 
-- Masked genome file (compressed).
+- Masked genome file (compressed with `bgzip`).
 - BED file representing the masked regions.
 - Summary statistics of the softmasked genome.
 

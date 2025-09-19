@@ -21,7 +21,7 @@ process TANTAN {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    tantan ${ref} | gzip --best --no-name > ${prefix}.masked.fa.gz
+    tantan ${ref} | bgzip --threads $task.cpus --compress-level 9 > ${prefix}.masked.fa.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

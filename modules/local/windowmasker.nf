@@ -36,7 +36,7 @@ process WINDOWMASKER_MASK {
         -in ${ref} \\
         -out ${prefix}.masked.fa
 
-    gzip --best --no-name ${prefix}.masked.fa
+    bgzip --threads $task.cpus --compress-level 9 ${prefix}.masked.fa
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

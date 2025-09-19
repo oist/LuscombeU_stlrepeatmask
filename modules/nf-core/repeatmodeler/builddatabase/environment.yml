@@ -7,3 +7,4 @@ channels:
   - defaults
 dependencies:
   - "bioconda::repeatmodeler=2.0.7"
+  - "bioconda::htslib=1.22.1"

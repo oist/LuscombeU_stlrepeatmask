@@ -3,10 +3,10 @@ process REPEATMODELER_MASKER {
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
-    def singularity_image = params.singularity_image ?: 'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.7--pl5321hdfd78af_0'
+    def singularity_image = params.singularity_image ?: 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/6e/6e2bb42273744500ab4352da322f76f5a191390b91d9362845cc3d85e4085336/data'
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         singularity_image :
-        'biocontainers/repeatmodeler:2.0.7--pl5321hdfd78af_0' }"
+        'community.wave.seqera.io/library/htslib_repeatmodeler:1dea9b8934adfaeb' }"
 
     input:
     tuple val(meta), path(fasta), path(ref)
@@ -35,12 +35,12 @@ process REPEATMODELER_MASKER {
         $args \\
 
     mv ${ref}.masked ${prefix}.masked.fa
-    gzip --best --no-name ${prefix}.masked.fa
+    bgzip --threads $task.cpus --compress-level 9 ${prefix}.masked.fa
     mv ${ref}.out.gff     ${prefix}.out.gff
     mv ${ref}.out.html    ${prefix}.out.html
     mv ${ref}.align       ${prefix}.align
     mv ${ref}.tbl         ${prefix}.tbl
-    if [ -e ${ref}.cat ] ; then  gzip --best --no-name ${ref}.cat ; fi
+    if [ -e ${ref}.cat ] ; then  bgzip --threads $task.cpus --compress-level 9 ${ref}.cat ; fi
     mv ${ref}.cat.gz ${prefix}.cat.gz
 
     cat <<-END_VERSIONS > versions.yml

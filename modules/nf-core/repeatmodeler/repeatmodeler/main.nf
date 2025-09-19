@@ -3,10 +3,10 @@ process REPEATMODELER_REPEATMODELER {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    def singularity_image = params.singularity_image ?: 'https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.7--pl5321hdfd78af_0'
+    def singularity_image = params.singularity_image ?: 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/6e/6e2bb42273744500ab4352da322f76f5a191390b91d9362845cc3d85e4085336/data'
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         singularity_image :
-        'biocontainers/repeatmodeler:2.0.7--pl5321hdfd78af_0' }"
+        'community.wave.seqera.io/library/htslib_repeatmodeler:1dea9b8934adfaeb' }"
 
     input:
     tuple val(meta), path(db)
