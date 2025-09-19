@@ -35,6 +35,8 @@ This is not an official pipeline. This pipeline uses code and infrastructure dev
 
 ## Usage
 
+**This pipeline does not work with conda.**
+
 First make a sample sheet with usual _nf-core_ pipelines.
 
 `samplesheet.csv`:
