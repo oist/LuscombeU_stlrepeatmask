@@ -5,7 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v2.0.0~beta1 - "tbd" [tbd]
 
- - Remove the `singularity_image` option.
+ - Add a `--dfam` option to provide DFAM.
+ - Remove the `--singularity_image` option.
  - Compress masked genomes with `bgzip` version `1.22.1` (allows for CRAM compression).
  - Update RepeatMasker from `4.1.5` to `4.1.9`. (needs a recent version of Dfam, see [change log on GitHub](https://github.com/Dfam-consortium/RepeatMasker/blob/master/CHANGELOG.md)).
  - Update RepeatModeler from `2.0.5` to `2.0.7` (see [release notes on GitHub](https://github.com/Dfam-consortium/RepeatModeler/blob/master/RELEASE-NOTES)).

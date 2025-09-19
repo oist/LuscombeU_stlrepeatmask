@@ -25,7 +25,8 @@ process REPEATMODELER_MASKER {
     script:
     def args    = task.ext.args ?: ''
     def prefix  = task.ext.prefix ?: "${meta.id}"
-    def libOrTaxon = taxon ? "-species ${taxon}" : "-lib $fasta"
+    def dfamarg = params.dfam ? "-libdir ${params.dfam}" : ""
+    def libOrTaxon = taxon ? "-species ${taxon} ${dfamarg}" : "-lib $fasta"
     """
     RepeatMasker \\
         -xsmall -pa 3 -html -gff -a \\

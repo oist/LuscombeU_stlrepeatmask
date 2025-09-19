@@ -83,6 +83,7 @@ nextflow run ./main.nf \
 - Point `--repeatlib` to a FASTA file to have an extra RepeatMasker run using it as a library.
 - Set `--taxon` to a taxon name to have an extra RepeatMasker run using the `-species` option set to that taxon.
 - Set the `--gzipped_input=false` parameter when the input is not compressed..
+- Point `--dfam` to a directory containing a `famdb` subdirectory with the FamDB files in HDF5 format (not gzipped).
 
 ### Dfam
 

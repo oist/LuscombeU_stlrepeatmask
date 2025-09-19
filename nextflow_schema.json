@@ -55,13 +55,18 @@
             "description": "",
             "default": "",
             "properties": {
+                "dfam": {
+                    "description": "Path to a DFAM library to be used by RepeatMasker.  It has to contain a subdirectory called `famdb` and containing the FamDB HDF5 files.",
+                    "type": "string",
+                    "fa_icon": "fas fa-book-open"
+                },
                 "taxon": {
                     "description": "Name of a taxonomic node that can subset the DFAM library.  It will be passed to the `-species` parameter of RepeatMasker.",
                     "type": "string",
                     "fa_icon": "fas fa-paw"
                 },
                 "repeatlib": {
-                    "description": "Patch to a repeat library to be used by RepeatMasker",
+                    "description": "Path to a repeat library to be used by RepeatMasker",
                     "type": "string",
                     "fa_icon": "fas fa-book-open"
                 }
