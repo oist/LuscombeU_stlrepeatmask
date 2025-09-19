@@ -46,7 +46,8 @@ query_2,path-to-query-genome-file-two.fasta.gz
 ```
 
 If the input is not compressed then pass the `--gzipped_input=false` parameter.
-Note that mixing compressed and uncompressed input is not supported.
+Note that mixing compressed and uncompressed input is not supported, partly
+because [WindowMasker does not handle `stdin` input](https://github.com/ncbi/ncbi-cxx-toolkit-public/issues/21).
 
 Then run the pipeline as usual:
 
