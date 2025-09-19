@@ -38,7 +38,7 @@ process GUNZIP_SAFE {
                 -cd \\
                 $args \\
                 $archive \\
-                > $gunzip
+                > $gunzip ;;
         *bzip2-compressed*)
             echo "bzip2 compression detected" ; exit 1 ;;
         *XZ-compressed*)
