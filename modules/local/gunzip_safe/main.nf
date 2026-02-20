@@ -44,8 +44,9 @@ process GUNZIP_SAFE {
         *XZ-compressed*)
             echo "xz compression detected" ; exit 1 ;;
         *)
-            # Do nothing or just rename if the file was already compressed
-            [ "\$(basename $archive)" != "\$(basename ${gunzip})" ] && ln -s $archive ${gunzip} ;;
+            if [ "\$(realpath $archive)" != "\$(realpath ${gunzip})" ]; then
+                cp $archive ${gunzip}
+            fi ;;
     esac
 
     cat <<-END_VERSIONS > versions.yml
