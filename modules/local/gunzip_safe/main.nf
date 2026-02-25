@@ -3,7 +3,7 @@ process GUNZIP_SAFE {
     // Derived from nf-core gunzip module, but also accepts non-compressed input.
     // Inspiration from SAMTOOLS_BGZIP.
 
-    tag "$archive"
+    tag "$meta.id"
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -23,10 +23,8 @@ process GUNZIP_SAFE {
 
     script:
     def args        = task.ext.args ?: ''
-    def extension   = ( archive.toString() - '.gz' ).tokenize('.')[-1]
-    def name        = archive.toString() - '.gz' - ".$extension"
-    def prefix      = task.ext.prefix ?: name
-    gunzip          = prefix + ".$extension"
+    def prefix      = task.ext.prefix ?: "${meta.id}"
+    gunzip          = prefix + ".fasta"
     """
     FILE_TYPE=\$(htsfile $archive)
     case "\$FILE_TYPE" in
@@ -56,10 +54,8 @@ process GUNZIP_SAFE {
 
     stub:
     def args        = task.ext.args ?: ''
-    def extension   = ( archive.toString() - '.gz' ).tokenize('.')[-1]
-    def name        = archive.toString() - '.gz' - ".$extension"
-    def prefix      = task.ext.prefix ?: name
-    gunzip          = prefix + ".$extension"
+    def prefix      = task.ext.prefix ?: "${meta.id}"
+    gunzip          = prefix + ".fasta"
     """
     touch $gunzip
     cat <<-END_VERSIONS > versions.yml
